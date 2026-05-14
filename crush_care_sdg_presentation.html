@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRUSH CARE – SDGs English Presentation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 0;
+  }
+
+  /* ── Navigation ── */
+  .nav {
+    position: fixed;
+    top: 16px;
+    right: 24px;
+    z-index: 1000;
+    display: flex;
+    gap: 8px;
+  }
+  .nav button {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s;
+  }
+  .nav button:hover { background: rgba(255,255,255,0.3); }
+
+  .slide-counter {
+    position: fixed;
+    bottom: 16px;
+    right: 24px;
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    z-index: 1000;
+  }
+
+  /* ── Slide Base ── */
+  .slide {
+    width: 960px;
+    min-height: 540px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    position: relative;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    display: none;
+  }
+  .slide.active { display: flex; flex-direction: column; }
+
+  /* ── Colour Tokens ── */
+  :root {
+    --teal:   #5ec5c0;
+    --teal-d: #3ba8a3;
+    --navy:   #1e3a5f;
+    --navy-d: #142840;
+    --peach:  #f4a57a;
+    --bg:     #f0f6f5;
+    --text:   #1e3a5f;
+    --muted:  #5a7a90;
+    --sdg3:   #4CAF50;
+    --accent: #ff6b6b;
+  }
+
+  /* ════════════════════════════════
+     SLIDE 1 – TITLE
+  ════════════════════════════════ */
+  #s1 {
+    background: linear-gradient(135deg, #e8f5f4 0%, #f5f0ea 100%);
+    min-height: 540px;
+    justify-content: center;
+  }
+  .s1-deco-tl {
+    position: absolute; top: -40px; left: -40px;
+    width: 160px; height: 160px;
+    background: var(--teal); opacity: .25; border-radius: 50%;
+  }
+  .s1-deco-tr {
+    position: absolute; top: 20px; right: 60px;
+    width: 80px; height: 80px;
+    background: var(--teal); opacity: .18; border-radius: 50%;
+  }
+  .s1-deco-br {
+    position: absolute; bottom: -50px; right: -50px;
+    width: 200px; height: 200px;
+    background: var(--teal-d); opacity: .15; border-radius: 50%;
+  }
+  .s1-badge {
+    position: absolute; top: 20px; right: 24px;
+    background: var(--teal); color: #fff;
+    padding: 6px 18px; border-radius: 20px;
+    font-size: 12px; font-weight: 600; letter-spacing: .5px;
+  }
+  .s1-body {
+    display: flex; flex-direction: column;
+    padding: 60px 80px; position: relative; z-index: 1;
+  }
+  .s1-accent-bar {
+    width: 6px; height: 64px;
+    background: var(--peach); border-radius: 3px;
+    margin-bottom: 20px;
+  }
+  .s1-title {
+    font-size: 52px; font-weight: 800;
+    color: var(--navy); line-height: 1.1; margin-bottom: 12px;
+  }
+  .s1-subtitle {
+    font-size: 20px; color: var(--muted);
+    font-weight: 500; margin-bottom: 8px;
+  }
+  .s1-tagline {
+    font-size: 16px; color: #7a9aaa;
+    font-style: italic; margin-bottom: 36px;
+  }
+  .s1-team {
+    font-size: 14px; color: var(--text);
+    font-weight: 600; line-height: 2;
+  }
+  .s1-sdg-pill {
+    display: inline-block;
+    background: var(--sdg3); color: #fff;
+    padding: 4px 14px; border-radius: 12px;
+    font-size: 13px; font-weight: 700; margin-top: 16px;
+  }
+
+  /* ════════════════════════════════
+     SLIDE 2 – OUTLINE
+  ════════════════════════════════ */
+  #s2 { background: #fff; }
+  .std-header {
+    background: var(--navy);
+    padding: 28px 60px 22px;
+    color: #fff;
+  }
+  .std-header h2 { font-size: 28px; font-weight: 800; }
+  .std-header p  { font-size: 14px; opacity: .7; margin-top: 4px; }
+  .std-body { padding: 32px 60px; flex: 1; }
+
+  .outline-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; margin-top: 8px;
+  }
+  .outline-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 20px;
+    background: #f4f9f8; border-radius: 10px;
+    border-left: 4px solid var(--teal);
+  }
+  .outline-num {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--teal); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px; flex-shrink: 0;
+  }
+  .outline-item h4 { font-size: 14px; font-weight: 700; color: var(--navy); }
+  .outline-item p  { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+  /* ════════════════════════════════
+     SLIDE 3 – MOTIVATION
+  ════════════════════════════════ */
+  #s3 { background: #f8fbf8; }
+  .motivation-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 24px; align-items: start;
+  }
+  .maslow-box {
+    background: #fff; border-radius: 12px;
+    padding: 20px; border: 1px solid #e0eee9;
+  }
+  .maslow-box h4 { font-size: 13px; color: var(--muted); margin-bottom: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+  .maslow-level {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; margin-bottom: 4px; border-radius: 6px;
+    font-size: 13px; font-weight: 600; color: #fff;
+  }
+  .ml5 { background: #e74c3c; }
+  .ml4 { background: #e67e22; }
+  .ml3 { background: #f1c40f; color: #333; }
+  .ml2 { background: #2ecc71; }
+  .ml1 { background: #3498db; }
+  .ml-highlight { background: #e74c3c; border: 3px solid #ff6b6b; font-size: 15px; }
+
+  .reasons-box { display: flex; flex-direction: column; gap: 12px; }
+  .reason-card {
+    background: #fff; border-radius: 10px;
+    padding: 14px 18px; border-left: 4px solid var(--teal);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .reason-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--peach); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 13px; flex-shrink: 0;
+  }
+  .reason-card h4 { font-size: 14px; font-weight: 700; color: var(--navy); }
+  .reason-card p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .core-banner {
+    margin-top: 20px; background: var(--navy);
+    border-radius: 10px; padding: 14px 20px;
+    color: #fff; font-size: 14px; text-align: center;
+    line-height: 1.6;
+  }
+  .core-banner strong { color: var(--teal); }
+
+  /* ════════════════════════════════
+     SLIDE 4 – SYSTEM OVERVIEW
+  ════════════════════════════════ */
+  #s4 { background: #fff; }
+  .ipo-row {
+    display: flex; gap: 0; align-items: stretch;
+    margin-top: 20px; border-radius: 12px; overflow: hidden;
+    border: 1px solid #dde8e7;
+  }
+  .ipo-col {
+    flex: 1; padding: 20px 22px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .ipo-input  { background: #eef7f6; }
+  .ipo-process{ background: #e3f2fd; border-left: 1px solid #c8e4f8; border-right: 1px solid #c8e4f8; }
+  .ipo-output { background: #fff8e8; }
+  .ipo-label {
+    font-size: 11px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted); margin-bottom: 6px;
+  }
+  .ipo-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    display: inline-block; margin-right: 8px;
+  }
+  .ipo-item {
+    font-size: 13px; color: var(--text);
+    display: flex; align-items: flex-start; gap: 6px;
+  }
+
+  .two-modules {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; margin-top: 20px;
+  }
+  .module-card {
+    border-radius: 12px; padding: 20px;
+    border: 2px solid transparent;
+  }
+  .module-a { background: #f0faf9; border-color: var(--teal); }
+  .module-b { background: #fff4ee; border-color: var(--peach); }
+  .module-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+  .module-a h3 { color: var(--teal-d); }
+  .module-b h3 { color: #c06030; }
+  .module-card ul { list-style: none; }
+  .module-card li { font-size: 13px; color: var(--muted); padding: 3px 0; }
+  .module-card li::before { content: "→ "; color: var(--teal-d); font-weight: 700; }
+
+  /* ════════════════════════════════
+     SLIDE 5 – CRUSH INDEX
+  ════════════════════════════════ */
+  #s5 { background: #f8fbf8; }
+  .ci-flow {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 20px;
+  }
+  .ci-step {
+    flex: 1; background: #fff; border-radius: 10px;
+    padding: 16px; text-align: center;
+    border-top: 4px solid var(--teal);
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .ci-step .step-icon { font-size: 26px; margin-bottom: 8px; }
+  .ci-step h4 { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .ci-step p  { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+  .ci-arrow { font-size: 22px; color: var(--teal); flex-shrink: 0; }
+
+  .ci-levels {
+    display: flex; gap: 12px; margin-top: 16px;
+  }
+  .ci-level {
+    flex: 1; border-radius: 10px; padding: 14px 16px;
+    position: relative;
+  }
+  .ci-safe    { background: #e8f8f5; border: 2px solid #2ecc71; }
+  .ci-mid     { background: #fef9e7; border: 2px solid #f1c40f; }
+  .ci-danger  { background: #fdecea; border: 2px solid #e74c3c; }
+  .ci-level .range { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+  .ci-safe   .range { color: #27ae60; }
+  .ci-mid    .range { color: #d4ac0d; }
+  .ci-danger .range { color: #c0392b; }
+  .ci-level h4 { font-size: 15px; font-weight: 800; color: var(--navy); }
+  .ci-level p  { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .questions-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 6px; margin-top: 16px;
+  }
+  .q-item {
+    font-size: 12px; color: var(--muted);
+    padding: 6px 12px; background: #f4f9f8; border-radius: 6px;
+    border-left: 3px solid var(--teal);
+  }
+
+  /* ════════════════════════════════
+     SLIDE 6 – MESSAGE TEMPERATURE
+  ════════════════════════════════ */
+  #s6 { background: #fff; }
+  .mt-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 20px; margin-top: 16px;
+  }
+  .mt-box {
+    background: #f8fbf8; border-radius: 10px; padding: 16px;
+    border-left: 4px solid var(--teal);
+  }
+  .mt-box h4 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+  .temp-levels { display: flex; flex-direction: column; gap: 6px; }
+  .temp-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: 6px; font-size: 13px;
+  }
+  .temp-cold   { background: #e3f2fd; color: #1565c0; }
+  .temp-normal { background: #e8f5e9; color: #2e7d32; }
+  .temp-hot    { background: #fce4ec; color: #880e4f; }
+  .temp-item .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .cold-dot   { background: #1565c0; }
+  .normal-dot { background: #2e7d32; }
+  .hot-dot    { background: #880e4f; }
+
+  .speed-levels { display: flex; flex-direction: column; gap: 6px; }
+  .speed-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 12px; border-radius: 6px; font-size: 13px;
+  }
+  .speed-slow   { background: #fff3e0; color: #e65100; }
+  .speed-normal { background: #e8f5e9; color: #1b5e20; }
+  .speed-fast   { background: #fce4ec; color: #880e4f; }
+
+  .warning-banner {
+    margin-top: 16px; background: #fff8e1;
+    border: 2px solid #ffc107; border-radius: 10px;
+    padding: 14px 20px; display: flex; gap: 12px; align-items: center;
+  }
+  .warning-banner .icon { font-size: 24px; }
+  .warning-banner h4 { font-size: 14px; font-weight: 700; color: #e65100; }
+  .warning-banner p  { font-size: 12px; color: #7a5c00; margin-top: 2px; }
+
+  /* ════════════════════════════════
+     SLIDE 7, 8, 9 – CASE STUDIES
+  ════════════════════════════════ */
+  .case-slide { background: #fafafa; }
+  .case-body {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px; margin-top: 4px;
+  }
+  .case-section { background: #fff; border-radius: 10px; padding: 16px; }
+  .case-section h4 {
+    font-size: 13px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px;
+  }
+  .case-score-row {
+    display: flex; justify-content: space-between;
+    padding: 6px 0; border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+  }
+  .case-score-row:last-child { border-bottom: none; }
+  .score-label { color: var(--muted); }
+  .score-val   { font-weight: 700; color: var(--navy); }
+
+  .chat-bubble {
+    padding: 8px 12px; border-radius: 8px;
+    font-size: 12px; line-height: 1.5; margin-bottom: 6px;
+  }
+  .bubble-crush { background: #e8f5f4; color: #1a4a40; border-radius: 8px 8px 8px 2px; }
+  .bubble-user  { background: #eef2ff; color: #1a1a4a; border-radius: 8px 8px 2px 8px; }
+  .bubble-label { font-size: 10px; font-weight: 700; margin-bottom: 2px; opacity: .6; }
+
+  .analysis-tag {
+    display: inline-block; padding: 3px 10px; border-radius: 10px;
+    font-size: 12px; font-weight: 700; margin-bottom: 6px;
+  }
+  .tag-mismatch  { background: #fdecea; color: #c0392b; }
+  .tag-mutual    { background: #e8f5e9; color: #27ae60; }
+  .tag-onesided  { background: #fff3e0; color: #e65100; }
+
+  .analysis-point {
+    font-size: 12px; color: var(--muted); padding: 4px 0;
+    border-left: 3px solid var(--teal); padding-left: 10px; margin-bottom: 6px;
+  }
+
+  .case-header-strip {
+    padding: 10px 60px 8px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .case-badge {
+    padding: 4px 14px; border-radius: 12px;
+    font-size: 12px; font-weight: 700;
+  }
+  .badge-a { background: #e3f2fd; color: #1565c0; }
+  .badge-b { background: #e8f5e9; color: #27ae60; }
+  .badge-c { background: #fdecea; color: #c0392b; }
+
+  /* ════════════════════════════════
+     SLIDE 10 – RESULTS
+  ════════════════════════════════ */
+  #s10 { background: #fff; }
+  .results-table {
+    width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px;
+  }
+  .results-table th {
+    background: var(--navy); color: #fff;
+    padding: 10px 16px; text-align: left; font-size: 13px;
+  }
+  .results-table td { padding: 10px 16px; border-bottom: 1px solid #eee; }
+  .results-table tr:nth-child(even) td { background: #f8fbf8; }
+  .temp-chip {
+    display: inline-block; padding: 2px 10px; border-radius: 10px;
+    font-size: 12px; font-weight: 700;
+  }
+  .chip-cold   { background: #e3f2fd; color: #1565c0; }
+  .chip-normal { background: #e8f5e9; color: #27ae60; }
+  .chip-hot    { background: #fce4ec; color: #880e4f; }
+  .chip-safe   { background: #e8f8f5; color: #1a7a5a; }
+  .chip-mid    { background: #fef9e7; color: #9a7a00; }
+  .chip-danger { background: #fdecea; color: #c0392b; }
+
+  .key-findings {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-top: 16px;
+  }
+  .finding-card {
+    background: #f8fbf8; border-radius: 10px; padding: 14px;
+    border-left: 4px solid var(--teal);
+  }
+  .finding-card h4 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .finding-card p  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ════════════════════════════════
+     SLIDE 11 – SDGs
+  ════════════════════════════════ */
+  #s11 { background: linear-gradient(135deg, #f0faf9 0%, #fafff5 100%); }
+  .sdg-focus {
+    background: var(--sdg3); color: #fff;
+    border-radius: 12px; padding: 20px 28px;
+    display: flex; align-items: center; gap: 20px;
+    margin-top: 16px; margin-bottom: 20px;
+  }
+  .sdg-focus .sdg-icon { font-size: 44px; flex-shrink: 0; }
+  .sdg-focus h3 { font-size: 22px; font-weight: 800; }
+  .sdg-focus p  { font-size: 14px; opacity: .9; margin-top: 4px; line-height: 1.5; }
+
+  .sdg-secondary {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 12px;
+  }
+  .sdg-card {
+    border-radius: 10px; padding: 14px;
+    border-left: 4px solid;
+  }
+  .sdg-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .sdg-card p  { font-size: 12px; line-height: 1.5; }
+  .sdg4-card { background: #fff3e0; border-color: #ff9800; }
+  .sdg4-card h4 { color: #e65100; }
+  .sdg5-card { background: #fce4ec; border-color: #e91e63; }
+  .sdg5-card h4 { color: #880e4f; }
+  .sdg10-card{ background: #ede7f6; border-color: #673ab7; }
+  .sdg10-card h4{ color: #4527a0; }
+
+  /* ════════════════════════════════
+     SLIDE 12 – REFLECTION
+  ════════════════════════════════ */
+  #s12 { background: #fff; }
+  .reflect-table {
+    width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px;
+  }
+  .reflect-table th {
+    background: var(--navy-d); color: #fff;
+    padding: 10px 20px; text-align: left;
+  }
+  .reflect-table td { padding: 12px 20px; border-bottom: 1px solid #eee; vertical-align: top; }
+  .reflect-table tr:nth-child(even) td { background: #f9f9f9; }
+  .reflect-table td:first-child { color: var(--navy); font-weight: 600; }
+  .reflect-table td:last-child  { color: var(--muted); }
+
+  /* ════════════════════════════════
+     SLIDE 13 – CONCLUSION
+  ════════════════════════════════ */
+  #s13 { background: #f8fbf8; }
+  .conclusion-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-top: 16px;
+  }
+  .concl-card {
+    background: #fff; border-radius: 12px; padding: 18px;
+    display: flex; gap: 14px; align-items: flex-start;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .concl-num {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--teal); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; flex-shrink: 0;
+  }
+  .concl-card h4 { font-size: 15px; font-weight: 700; color: var(--navy); }
+  .concl-card p  { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+
+  /* ════════════════════════════════
+     SLIDE 14 – THANK YOU
+  ════════════════════════════════ */
+  #s14 {
+    background: linear-gradient(135deg, #e8f5f4 0%, #f5f0ea 100%);
+    min-height: 540px;
+    justify-content: center;
+    align-items: center;
+  }
+  .ty-content {
+    text-align: center; padding: 60px;
+    position: relative; z-index: 1;
+    width: 100%;
+  }
+  .ty-big {
+    font-size: 68px; font-weight: 900;
+    color: var(--navy); letter-spacing: -2px;
+    line-height: 1;
+  }
+  .ty-sub {
+    font-size: 16px; color: var(--muted);
+    margin-top: 12px; margin-bottom: 36px;
+  }
+  .team-grid {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 16px; max-width: 600px; margin: 0 auto;
+  }
+  .team-section h4 {
+    font-size: 12px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .5px;
+    margin-bottom: 8px;
+  }
+  .team-member {
+    font-size: 13px; color: var(--text); padding: 4px 0;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .member-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--teal); flex-shrink: 0;
+  }
+  .ty-teacher {
+    margin-top: 28px; font-size: 13px; color: var(--muted);
+  }
+  .ty-teacher strong { color: var(--navy); }
+
+  /* ─── Progress bar ─── */
+  .progress-bar {
+    height: 4px; background: #ddd; width: 960px; border-radius: 2px;
+    margin-bottom: 6px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--teal);
+    transition: width .3s ease;
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<div class="nav">
+  <button onclick="prevSlide()">◀ Prev</button>
+  <button onclick="nextSlide()">Next ▶</button>
+</div>
+<div class="slide-counter" id="counter">1 / 14</div>
+
+<!-- Progress -->
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:7.14%"></div></div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 1 – TITLE
+══════════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div class="s1-deco-tl"></div>
+  <div class="s1-deco-tr"></div>
+  <div class="s1-deco-br"></div>
+  <div class="s1-badge">Introduction to Computer Science</div>
+  <div class="s1-body">
+    <div class="s1-accent-bar"></div>
+    <div class="s1-title">CRUSH CARE</div>
+    <div class="s1-subtitle">Comparing the Cognitive Gap Between<br>Your Feelings and Their Texts</div>
+    <div class="s1-tagline">"Is it that they're cold — or that you're running hot?"</div>
+    <div class="s1-team">
+      Department of Electronic Engineering, Class A — Group 4<br>
+      01 何旻臻 &nbsp;·&nbsp; 02 徐宥甯 &nbsp;·&nbsp; 03 董育媗<br>
+      45 孫偉勛 &nbsp;·&nbsp; 46 王中廷 &nbsp;·&nbsp; 50 呂晨澤<br>
+      Advisor: 陳定睿
+    </div>
+    <span class="s1-sdg-pill">SDG 3 — Good Health &amp; Well-Being</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 2 – OUTLINE
+══════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="std-header">
+    <h2>Outline</h2>
+    <p>A step-by-step walk through CRUSH CARE</p>
+  </div>
+  <div class="std-body">
+    <div class="outline-grid">
+      <div class="outline-item">
+        <div class="outline-num">1</div>
+        <div>
+          <h4>Research Motivation</h4>
+          <p>Why ambiguity distorts perception</p>
+        </div>
+      </div>
+      <div class="outline-item">
+        <div class="outline-num">2</div>
+        <div>
+          <h4>System Architecture</h4>
+          <p>Two modules — Crush Index &amp; Message Temperature</p>
+        </div>
+      </div>
+      <div class="outline-item">
+        <div class="outline-num">3</div>
+        <div>
+          <h4>Program Design</h4>
+          <p>Questionnaire, word count, reply-speed analysis, alerts</p>
+        </div>
+      </div>
+      <div class="outline-item">
+        <div class="outline-num">4</div>
+        <div>
+          <h4>Case Studies</h4>
+          <p>Three user scenarios — rational / moderate / severe crush</p>
+        </div>
+      </div>
+      <div class="outline-item">
+        <div class="outline-num">5</div>
+        <div>
+          <h4>Results &amp; Analysis</h4>
+          <p>Engagement vs. actual message heat, misalignment</p>
+        </div>
+      </div>
+      <div class="outline-item">
+        <div class="outline-num">6</div>
+        <div>
+          <h4>SDGs Connection</h4>
+          <p>Mental health, emotional literacy, equality</p>
+        </div>
+      </div>
+      <div class="outline-item">
+        <div class="outline-num">7</div>
+        <div>
+          <h4>Reflection &amp; Future Outlook</h4>
+          <p>Limitations and improvements</p>
+        </div>
+      </div>
+      <div class="outline-item">
+        <div class="outline-num">8</div>
+        <div>
+          <h4>Conclusion</h4>
+          <p>Key takeaways for emotional self-awareness</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 3 – MOTIVATION
+══════════════════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="std-header">
+    <h2>Research Motivation</h2>
+    <p>Exploring the gap between subjective feelings and objective message behavior</p>
+  </div>
+  <div class="std-body">
+    <div class="motivation-grid">
+      <div class="maslow-box">
+        <h4>Maslow's Hierarchy (1943)</h4>
+        <div class="maslow-level ml5">Self-Actualization</div>
+        <div class="maslow-level ml4">Esteem Needs</div>
+        <div class="maslow-level ml-highlight">❤️ Love &amp; Belonging — amplified in ambiguity</div>
+        <div class="maslow-level ml2">Safety Needs</div>
+        <div class="maslow-level ml1">Physiological Needs</div>
+      </div>
+      <div class="reasons-box">
+        <div class="reason-card">
+          <div class="reason-num">1</div>
+          <div>
+            <h4>Higher needs, higher misreading</h4>
+            <p>The stronger the desire for love and belonging, the easier it is to over-interpret neutral messages.</p>
+          </div>
+        </div>
+        <div class="reason-card">
+          <div class="reason-num">2</div>
+          <div>
+            <h4>Perception ≠ Reality</h4>
+            <p>"They replied with a heart — they must like me" vs. what data actually shows.</p>
+          </div>
+        </div>
+        <div class="reason-card">
+          <div class="reason-num">3</div>
+          <div>
+            <h4>CRUSH CARE brings rationality back</h4>
+            <p><strong>Crush Index</strong> measures <em>your</em> emotional heat.<br>
+               <strong>Message Temperature</strong> measures <em>their</em> interaction heat.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="core-banner">
+      Core Goal: Detect the gap between <strong>"what you think"</strong> and <strong>"what the data shows"</strong>
+      → Help users see the difference between emotional investment and actual messaging behavior.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 4 – SYSTEM OVERVIEW
+══════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="std-header">
+    <h2>System Architecture</h2>
+    <p>Two independent C programs working together</p>
+  </div>
+  <div class="std-body">
+    <div class="two-modules">
+      <div class="module-card module-a">
+        <h3>Module 1 — Crush Index</h3>
+        <ul>
+          <li>User answers 10 questions (scale 1–5)</li>
+          <li>Questions are weighted &amp; summed</li>
+          <li>Output: score (0–100) + personality type + advice</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <div class="ipo-row">
+            <div class="ipo-col ipo-input">
+              <div class="ipo-label">Input</div>
+              <div class="ipo-item">📝 10-question survey</div>
+              <div class="ipo-item">🔢 Likert scale 1–5</div>
+            </div>
+            <div class="ipo-col ipo-process">
+              <div class="ipo-label">Process</div>
+              <div class="ipo-item">⚙️ Weighted scoring</div>
+              <div class="ipo-item">➕ Total sum</div>
+            </div>
+            <div class="ipo-col ipo-output">
+              <div class="ipo-label">Output</div>
+              <div class="ipo-item">📊 Crush Index %</div>
+              <div class="ipo-item">💡 Text advice</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="module-card module-b">
+        <h3>Module 2 — Message Temperature</h3>
+        <ul>
+          <li>User pastes their crush's chat messages</li>
+          <li>Program counts words &amp; reads reply time (sec)</li>
+          <li>Output: temperature (cold/normal/hot) + speed + warning</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <div class="ipo-row">
+            <div class="ipo-col ipo-input">
+              <div class="ipo-label">Input</div>
+              <div class="ipo-item">💬 Chat messages</div>
+              <div class="ipo-item">⏱️ Reply time (sec)</div>
+            </div>
+            <div class="ipo-col ipo-process">
+              <div class="ipo-label">Process</div>
+              <div class="ipo-item">📏 Word count analysis</div>
+              <div class="ipo-item">⚡ Speed classification</div>
+            </div>
+            <div class="ipo-col ipo-output">
+              <div class="ipo-label">Output</div>
+              <div class="ipo-item">🌡️ Temperature level</div>
+              <div class="ipo-item">🚨 Danger alert</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 5 – CRUSH INDEX
+══════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="std-header">
+    <h2>Module 1 — Crush Index</h2>
+    <p>Measuring your emotional investment with a weighted questionnaire</p>
+  </div>
+  <div class="std-body">
+    <div class="questions-grid">
+      <div class="q-item">Q1: How often do you initiate contact? (1–5)</div>
+      <div class="q-item">Q2: Anxiety when they leave a message on read? (1–5)</div>
+      <div class="q-item">Q3: How often do you check their status? (1–5)</div>
+      <div class="q-item">Q4: How often do you change plans for them? (1–5)</div>
+      <div class="q-item">Q5: Do you reply instantly when they message? (1–5)</div>
+      <div class="q-item">Q6: How much do they influence your mood? (1–5)</div>
+      <div class="q-item">Q7: How actively do you create chances to meet? (1–5)</div>
+      <div class="q-item">Q8: One sentence makes you overthink? (1–5)</div>
+      <div class="q-item">Q9: How often do you prepare gifts or surprises? (1–5)</div>
+      <div class="q-item">Q10: How many times a day do you think of them? (1–5)</div>
+    </div>
+    <div class="ci-levels" style="margin-top:16px;">
+      <div class="ci-level ci-safe">
+        <div class="range">Score &lt; 40</div>
+        <h4>Rational Type</h4>
+        <p>Logic &gt; Emotions<br>
+           Advice: Stay self-aware and observe calmly.</p>
+      </div>
+      <div class="ci-level ci-mid">
+        <div class="range">40 ≤ Score &lt; 70</div>
+        <h4>Quietly Crushing</h4>
+        <p>Somewhat invested, still recoverable.<br>
+           Advice: Don't neglect your own life and boundaries.</p>
+      </div>
+      <div class="ci-level ci-danger">
+        <div class="range">Score ≥ 70</div>
+        <h4>Head Over Heels</h4>
+        <p>Emotions &gt; Logic — easily hurt.<br>
+           Advice: Refocus on yourself; let emotions cool down first.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 6 – MESSAGE TEMPERATURE
+══════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="std-header">
+    <h2>Module 2 — Message Temperature</h2>
+    <p>Quantifying their interaction heat through word count and reply speed</p>
+  </div>
+  <div class="std-body">
+    <div class="mt-grid">
+      <div class="mt-box">
+        <h4>Word Count → Temperature</h4>
+        <div class="temp-levels">
+          <div class="temp-item temp-cold">
+            <span class="dot cold-dot"></span>
+            <span><strong>Cold</strong> — avg. &lt; 10 chars &nbsp;&nbsp;&nbsp; (no real engagement)</span>
+          </div>
+          <div class="temp-item temp-normal">
+            <span class="dot normal-dot"></span>
+            <span><strong>Normal</strong> — 10–19 chars &nbsp;&nbsp; (polite but neutral)</span>
+          </div>
+          <div class="temp-item temp-hot">
+            <span class="dot hot-dot"></span>
+            <span><strong>Hot</strong> — avg. ≥ 20 chars &nbsp;&nbsp;&nbsp; (willing to invest time)</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-box">
+        <h4>Reply Time → Speed</h4>
+        <div class="speed-levels">
+          <div class="speed-item speed-slow">
+            ⏳ <strong>Slow</strong> &nbsp; reply time &gt; 3600 s (1 hr) &nbsp;→ chat is not a priority
+          </div>
+          <div class="speed-item speed-normal">
+            ⏱️ <strong>Normal</strong> &nbsp; 600–3600 s (10 min–1 hr) &nbsp;→ replies when free
+          </div>
+          <div class="speed-item speed-fast">
+            ⚡ <strong>Fast</strong> &nbsp; reply time ≤ 600 s (10 min) &nbsp;→ highly attentive to you
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="warning-banner">
+      <span class="icon">⚠️</span>
+      <div>
+        <h4>Danger Alert — Triggered When:</h4>
+        <p>Crush Index &gt; 75 <strong>AND</strong> Reply Time &gt; 3600 s (1 hour)
+           → "You're deeply invested but their engagement is clearly low.
+           Suggestion: Reduce initiation, refocus on your own life before re-evaluating."</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 7 – CASE STUDY 1
+══════════════════════════════════════ -->
+<div class="slide case-slide" id="s7">
+  <div class="std-header" style="background:#1565c0;">
+    <h2>Case Study 1 — The Rational One (小A)</h2>
+    <p>Crush Index: 30.00 &nbsp;|&nbsp; Personality Type: Rational</p>
+  </div>
+  <div class="case-header-strip">
+    <span class="analysis-tag tag-mismatch">Misaligned Ambiguity</span>
+    <span class="case-badge badge-a">Scenario: Their crush is obsessed; 小A feels nothing</span>
+  </div>
+  <div class="std-body" style="padding-top:0;">
+    <div class="case-body">
+      <div class="case-section">
+        <h4>Crush Index Results</h4>
+        <div class="case-score-row"><span class="score-label">Score</span><span class="score-val">30.00</span></div>
+        <div class="case-score-row"><span class="score-label">Status</span><span class="temp-chip chip-safe">Safe</span></div>
+        <div class="case-score-row"><span class="score-label">Personality</span><span class="score-val">Rational Type</span></div>
+        <div class="case-score-row"><span class="score-label">Advice</span><span class="score-val">Stay self-aware</span></div>
+        <br>
+        <h4>Message Analysis</h4>
+        <div class="case-score-row"><span class="score-label">Avg Length</span><span class="score-val">68.00 chars</span></div>
+        <div class="case-score-row"><span class="score-label">Temperature</span><span class="temp-chip chip-hot">Hot</span></div>
+        <div class="case-score-row"><span class="score-label">Reply Speed</span><span class="score-val">60 s → Fast</span></div>
+        <div class="case-score-row"><span class="score-label">Alert</span><span class="score-val">None</span></div>
+      </div>
+      <div class="case-section">
+        <h4>Conversation (crush replies in &lt; 1 min)</h4>
+        <div class="chat-bubble bubble-crush">
+          <div class="bubble-label">Crush</div>
+          "You looked really nice today. I wanted to tell you earlier but I got nervous lol.."
+        </div>
+        <div class="chat-bubble bubble-user">
+          <div class="bubble-label">小A</div>
+          "Thank you for the feedback."
+        </div>
+        <div class="chat-bubble bubble-crush">
+          <div class="bubble-label">Crush</div>
+          "Are you free this weekend? I kinda want to see you again."
+        </div>
+        <div class="chat-bubble bubble-user">
+          <div class="bubble-label">小A</div>
+          "I have a math test."
+        </div>
+        <div class="chat-bubble bubble-crush">
+          <div class="bubble-label">Crush</div>
+          "I feel like we get along really well… maybe better than friends?"
+        </div>
+        <div class="chat-bubble bubble-user">
+          <div class="bubble-label">小A</div>
+          "?"
+        </div>
+      </div>
+      <div class="case-section">
+        <h4>Analysis</h4>
+        <div class="analysis-point">小A shows zero emotional investment — low Crush Index, no emotional response.</div>
+        <div class="analysis-point">Their crush's message temperature is extremely high: proactive, long messages, ultra-fast replies.</div>
+        <div class="analysis-point">Massive heat gap — a textbook <strong>misaligned ambiguity</strong>: Crush = HOT, 小A = COLD.</div>
+        <div class="analysis-point">System correctly identifies no danger for 小A and issues no alert.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 8 – CASE STUDY 2
+══════════════════════════════════════ -->
+<div class="slide case-slide" id="s8">
+  <div class="std-header" style="background:#1b5e20;">
+    <h2>Case Study 2 — Moderate Crush (小B)</h2>
+    <p>Crush Index: 60.00 &nbsp;|&nbsp; Personality Type: Quietly Crushing</p>
+  </div>
+  <div class="case-header-strip">
+    <span class="analysis-tag tag-mutual">Mutual Attraction</span>
+    <span class="case-badge badge-b">Scenario: Both parties have feelings for each other</span>
+  </div>
+  <div class="std-body" style="padding-top:0;">
+    <div class="case-body">
+      <div class="case-section">
+        <h4>Crush Index Results</h4>
+        <div class="case-score-row"><span class="score-label">Score</span><span class="score-val">60.00</span></div>
+        <div class="case-score-row"><span class="score-label">Status</span><span class="temp-chip chip-mid">Moderate</span></div>
+        <div class="case-score-row"><span class="score-label">Personality</span><span class="score-val">Quietly Crushing</span></div>
+        <div class="case-score-row"><span class="score-label">Advice</span><span class="score-val">Don't neglect own life</span></div>
+        <br>
+        <h4>Message Analysis</h4>
+        <div class="case-score-row"><span class="score-label">Avg Length</span><span class="score-val">24.33 chars</span></div>
+        <div class="case-score-row"><span class="score-label">Temperature</span><span class="temp-chip chip-hot">Hot</span></div>
+        <div class="case-score-row"><span class="score-label">Reply Speed</span><span class="score-val">650 s → Normal</span></div>
+        <div class="case-score-row"><span class="score-label">Alert</span><span class="score-val">None</span></div>
+      </div>
+      <div class="case-section">
+        <h4>Conversation (crush replies avg. 650 s)</h4>
+        <div class="chat-bubble bubble-user">
+          <div class="bubble-label">小B</div>
+          "Did you see my message… from 2 minutes ago?"
+        </div>
+        <div class="chat-bubble bubble-crush">
+          <div class="bubble-label">Crush</div>
+          "LMAO yes?? I'm literally typing??"
+        </div>
+        <div class="chat-bubble bubble-crush">
+          <div class="bubble-label">Crush</div>
+          "You're cute when you're nervous lol."
+        </div>
+        <div class="chat-bubble bubble-crush">
+          <div class="bubble-label">Crush</div>
+          "Wanna grab something together later? :)"
+        </div>
+        <div class="chat-bubble bubble-user">
+          <div class="bubble-label">小B</div>
+          "(internally screaming) yeah sure!!!"
+        </div>
+        <div class="chat-bubble bubble-crush">
+          <div class="bubble-label">Crush</div>
+          "You typed that too fast. Are you excited or something?"
+        </div>
+        <div class="chat-bubble bubble-user">
+          <div class="bubble-label">小B</div>
+          "no"
+        </div>
+      </div>
+      <div class="case-section">
+        <h4>Analysis</h4>
+        <div class="analysis-point">小B's emotional investment is moderate — quick replies, checks messages, but not obsessive.</div>
+        <div class="analysis-point">Crush writes long messages and replies at a natural pace — genuinely engaged.</div>
+        <div class="analysis-point">Heat levels are <strong>balanced and close</strong> — classic mutual attraction scenario.</div>
+        <div class="analysis-point">No danger alert issued; system recognises healthy reciprocal interest.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 9 – CASE STUDY 3
+══════════════════════════════════════ -->
+<div class="slide case-slide" id="s9">
+  <div class="std-header" style="background:#b71c1c;">
+    <h2>Case Study 3 — Heavy Crush (小C)</h2>
+    <p>Crush Index: 92.00 &nbsp;|&nbsp; Personality Type: Head Over Heels ⚠️</p>
+  </div>
+  <div class="case-header-strip">
+    <span class="analysis-tag tag-onesided">One-Sided Burning</span>
+    <span class="case-badge badge-c">Scenario: 小C is fully invested; crush is completely uninterested</span>
+  </div>
+  <div class="std-body" style="padding-top:0;">
+    <div class="case-body">
+      <div class="case-section">
+        <h4>Crush Index Results</h4>
+        <div class="case-score-row"><span class="score-label">Score</span><span class="score-val">92.00</span></div>
+        <div class="case-score-row"><span class="score-label">Status</span><span class="temp-chip chip-danger">DANGER</span></div>
+        <div class="case-score-row"><span class="score-label">Personality</span><span class="score-val">Head Over Heels</span></div>
+        <div class="case-score-row"><span class="score-label">Advice</span><span class="score-val">Refocus on yourself now</span></div>
+        <br>
+        <h4>Message Analysis</h4>
+        <div class="case-score-row"><span class="score-label">Avg Length</span><span class="score-val">4.20 chars</span></div>
+        <div class="case-score-row"><span class="score-label">Temperature</span><span class="temp-chip chip-cold">Cold</span></div>
+        <div class="case-score-row"><span class="score-label">Reply Speed</span><span class="score-val">4000 s → Slow</span></div>
+        <div class="case-score-row"><span class="score-label">Alert</span><span class="score-val" style="color:#c0392b;">⚠️ DANGER ALERT</span></div>
+      </div>
+      <div class="case-section">
+        <h4>Conversation (crush replies avg. 4000 s)</h4>
+        <div class="chat-bubble bubble-user">
+          <div class="bubble-label">小C</div>
+          "Good morning~ Did you sleep well?"
+        </div>
+        <div class="chat-bubble bubble-crush">
+          <div class="bubble-label">Crush</div>"yes"
+        </div>
+        <div class="chat-bubble bubble-user">
+          <div class="bubble-label">小C</div>
+          "HAHA cool… what are you doing today?"
+        </div>
+        <div class="chat-bubble bubble-crush">
+          <div class="bubble-label">Crush</div>"busy"
+        </div>
+        <div class="chat-bubble bubble-user">
+          <div class="bubble-label">小C</div>
+          "btw I saw a dog today that looked like you ."
+        </div>
+        <div class="chat-bubble bubble-crush">
+          <div class="bubble-label">Crush</div>"k"
+        </div>
+        <div class="chat-bubble bubble-user">
+          <div class="bubble-label">小C</div>
+          "Do you wanna hang out this weekend? which day? :D"
+        </div>
+        <div class="chat-bubble bubble-crush">
+          <div class="bubble-label">Crush</div>"maybe" &nbsp; / &nbsp; "not sure"
+        </div>
+      </div>
+      <div class="case-section">
+        <h4>Analysis</h4>
+        <div class="analysis-point">小C: ultra-fast replies, long warm messages, daily morning greetings — maximum emotional investment.</div>
+        <div class="analysis-point">Crush: average 4 characters per reply, 1-hour+ response times — near-zero engagement.</div>
+        <div class="analysis-point">Extreme heat gap — a clear <strong>one-sided burning</strong> situation.</div>
+        <div class="analysis-point" style="border-color:#e74c3c; color:#c0392b;">
+          ⚠️ <strong>DANGER ALERT fired:</strong> "You're deeply invested but engagement is clearly low. Reduce initiation and refocus on your own life."
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 10 – RESULTS
+══════════════════════════════════════ -->
+<div class="slide" id="s10">
+  <div class="std-header">
+    <h2>Results &amp; Analysis</h2>
+    <p>Comparing emotional investment vs. actual message behaviour across all three cases</p>
+  </div>
+  <div class="std-body">
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Crush Index</th>
+          <th>Status</th>
+          <th>Msg Temperature</th>
+          <th>Reply Speed</th>
+          <th>Pattern</th>
+          <th>Alert</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>小A</strong></td>
+          <td>30.00</td>
+          <td><span class="temp-chip chip-safe">Safe</span></td>
+          <td><span class="temp-chip chip-hot">Hot (crush)</span></td>
+          <td>Fast (60 s)</td>
+          <td>Misaligned</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td><strong>小B</strong></td>
+          <td>60.00</td>
+          <td><span class="temp-chip chip-mid">Moderate</span></td>
+          <td><span class="temp-chip chip-hot">Hot</span></td>
+          <td>Normal (650 s)</td>
+          <td>Mutual</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td><strong>小C</strong></td>
+          <td>92.00</td>
+          <td><span class="temp-chip chip-danger">Danger</span></td>
+          <td><span class="temp-chip chip-cold">Cold</span></td>
+          <td>Slow (4000 s)</td>
+          <td>One-Sided</td>
+          <td>⚠️ Triggered</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="key-findings">
+      <div class="finding-card">
+        <h4>Finding 1 — Misaligned Ambiguity</h4>
+        <p>When the user's Crush Index is low but the crush is highly warm, there is no emotional risk to the user.
+           The system correctly withholds the danger alert.</p>
+      </div>
+      <div class="finding-card">
+        <h4>Finding 2 — Balanced Mutual Attraction</h4>
+        <p>When both message temperature and Crush Index are moderate and aligned, the relationship shows healthy
+           reciprocal engagement — the healthiest pattern.</p>
+      </div>
+      <div class="finding-card">
+        <h4>Finding 3 — One-Sided Burning</h4>
+        <p>High Crush Index + Cold/Slow messages = the most psychologically damaging scenario.
+           The system triggers an alert to protect the user's wellbeing.</p>
+      </div>
+      <div class="finding-card">
+        <h4>Finding 4 — Data Over Intuition</h4>
+        <p>Users in the "Head Over Heels" category often <em>feel</em> the connection is mutual.
+           Objective message data breaks the cognitive bias and shows reality.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 11 – SDGs
+══════════════════════════════════════ -->
+<div class="slide" id="s11">
+  <div class="std-header">
+    <h2>SDGs Connection</h2>
+    <p>How CRUSH CARE contributes to the UN Sustainable Development Goals</p>
+  </div>
+  <div class="std-body">
+    <div class="sdg-focus">
+      <div class="sdg-icon">💚</div>
+      <div>
+        <h3>Primary Goal — SDG 3: Good Health &amp; Well-Being</h3>
+        <p>CRUSH CARE reduces ambiguity-induced anxiety by replacing "guessing and overthinking" with objective data.
+           When users can see the numbers, emotional distress decreases — promoting more stable mental health
+           in young people navigating romantic uncertainty.</p>
+      </div>
+    </div>
+    <div class="sdg-secondary">
+      <div class="sdg-card sdg4-card">
+        <h4>SDG 4 — Quality Education (Emotional Literacy)</h4>
+        <p>Helps users distinguish between genuine interest, politeness, and personal boundaries — building
+           emotional intelligence that schools rarely teach.</p>
+      </div>
+      <div class="sdg-card sdg5-card">
+        <h4>SDG 5 — Gender Equality</h4>
+        <p>Analysis is behavior-based, not gender-based. No stereotypes are applied — the system respects
+           all users equally and emphasises mutual respect in relationships.</p>
+      </div>
+      <div class="sdg-card sdg10-card">
+        <h4>SDG 10 — Reduced Inequalities</h4>
+        <p>Provides an anonymous, self-service emotional support tool accessible to students who lack the
+           confidence or resources to seek external guidance.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 12 – REFLECTION
+══════════════════════════════════════ -->
+<div class="slide" id="s12">
+  <div class="std-header">
+    <h2>Reflection &amp; Future Development</h2>
+    <p>Honest limitations and where CRUSH CARE can grow</p>
+  </div>
+  <div class="std-body">
+    <table class="reflect-table">
+      <thead>
+        <tr><th>Current Limitation</th><th>Future Improvement</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Message temperature is highly subjective</td>
+          <td>Add a tone-word library, emoji analysis, and a multi-variable scoring model</td>
+        </tr>
+        <tr>
+          <td>Poor performance on Chinese/non-English text</td>
+          <td>Integrate Chinese tokenisation + sentiment analysis (e.g., jieba + CKIP)</td>
+        </tr>
+        <tr>
+          <td>Crush Index relies entirely on self-reported feelings</td>
+          <td>Combine with behavioral data; create personalised adaptive scales; expand question types</td>
+        </tr>
+        <tr>
+          <td>Conclusions still require human interpretation</td>
+          <td>Build an "ambiguity health score," trend graphs, and automated relationship advice engine</td>
+        </tr>
+        <tr>
+          <td>Limited dataset — analysis is narrow</td>
+          <td>Expand dataset; add situational categories; analyse stickers and reaction emojis</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 13 – CONCLUSION
+══════════════════════════════════════ -->
+<div class="slide" id="s13">
+  <div class="std-header">
+    <h2>Conclusion</h2>
+    <p>What CRUSH CARE gives users — four key takeaways</p>
+  </div>
+  <div class="std-body">
+    <div class="conclusion-grid">
+      <div class="concl-card">
+        <div class="concl-num">1</div>
+        <div>
+          <h4>Know how deep you're in</h4>
+          <p>Understand whether you're genuinely interested or just caught in an emotional spiral of overthinking.</p>
+        </div>
+      </div>
+      <div class="concl-card">
+        <div class="concl-num">2</div>
+        <div>
+          <h4>Separate fact from imagination</h4>
+          <p>Identify which parts of the conversation are real signals and which are self-constructed narratives.</p>
+        </div>
+      </div>
+      <div class="concl-card">
+        <div class="concl-num">3</div>
+        <div>
+          <h4>Recognise your emotional patterns</h4>
+          <p>Understand the habits and blind spots you tend to fall into during ambiguous romantic situations.</p>
+        </div>
+      </div>
+      <div class="concl-card">
+        <div class="concl-num">4</div>
+        <div>
+          <h4>Maintain rationality and boundaries</h4>
+          <p>Prevent emotions from being amplified disproportionately — so you can stay grounded, protect yourself, and make clearer decisions.</p>
+        </div>
+      </div>
+    </div>
+    <div class="core-banner" style="margin-top:20px;">
+      CRUSH CARE turns ambiguous feelings into measurable data —
+      <strong>because clarity is the first step toward emotional health.</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 14 – THANK YOU
+══════════════════════════════════════ -->
+<div class="slide" id="s14">
+  <div class="s1-deco-tl"></div>
+  <div class="s1-deco-br"></div>
+  <div class="ty-content">
+    <div class="ty-big">Thank You!</div>
+    <div class="ty-sub">We welcome any questions about CRUSH CARE</div>
+    <div class="team-grid">
+      <div class="team-section">
+        <h4>Programming</h4>
+        <div class="team-member"><span class="member-dot"></span>11426145 孫偉勛 (60%)</div>
+        <div class="team-member"><span class="member-dot"></span>11426146 王中廷 (20%)</div>
+        <div class="team-member"><span class="member-dot"></span>11426150 呂晨澤 (20%)</div>
+      </div>
+      <div class="team-section">
+        <h4>Presentation Design</h4>
+        <div class="team-member"><span class="member-dot"></span>11426101 何旻臻 (50%)</div>
+        <div class="team-member"><span class="member-dot"></span>11426102 徐宥甯 (20%)</div>
+        <div class="team-member"><span class="member-dot"></span>11426103 董育媗 (30%)</div>
+      </div>
+      <div class="team-section">
+        <h4>Presentation</h4>
+        <div class="team-member"><span class="member-dot"></span>11426101 何旻臻 (70%)</div>
+        <div class="team-member"><span class="member-dot"></span>11426145 孫偉勛 (30%)</div>
+      </div>
+    </div>
+    <div class="ty-teacher">Advisor: <strong>陳定睿</strong> &nbsp;·&nbsp; Department of Electronic Engineering, Class A &nbsp;·&nbsp; Group 4</div>
+    <div style="margin-top:16px;">
+      <span class="s1-sdg-pill">SDG 3 — Good Health &amp; Well-Being</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + slides.length;
+    document.getElementById('progress').style.width = ((current + 1) / slides.length * 100) + '%';
+  }
+
+  function nextSlide() { showSlide(current + 1); }
+  function prevSlide() { showSlide(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prevSlide();
+  });
+</script>
+
+</body>
+</html>

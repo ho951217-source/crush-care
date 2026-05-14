@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CRUSH CARE – System Architecture</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ── Slide canvas 16:9 ── */
+.slide {
+  width: 960px;
+  height: 540px;
+  background: linear-gradient(145deg, #eef8f7 0%, #fdf5f0 100%);
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+
+/* ── Deco circles ── */
+.deco { position: absolute; border-radius: 50%; }
+.d1 { width:220px; height:220px; background:#5ec5c0; opacity:.12; top:-80px; left:-60px; }
+.d2 { width:140px; height:140px; background:#5ec5c0; opacity:.10; top:30px; right:30px; }
+.d3 { width:180px; height:180px; background:#f4a57a; opacity:.08; bottom:-60px; right:-40px; }
+
+/* ── Slide label ── */
+.slide-label {
+  position: absolute;
+  top: 22px; right: 22px;
+  background: #5ec5c0;
+  color: #fff;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  padding: 4px 12px; border-radius: 12px;
+}
+
+/* ── Title ── */
+.title-block {
+  position: absolute;
+  top: 28px; left: 44px;
+}
+.title-block .eyebrow {
+  font-size: 10px; font-weight: 800; letter-spacing: 1.5px;
+  color: #5ec5c0; text-transform: uppercase; margin-bottom: 4px;
+}
+.title-block h1 {
+  font-size: 22px; font-weight: 900; color: #1e3a5f; letter-spacing: -.3px;
+}
+
+/* ── Main layout ── */
+.arch {
+  position: absolute;
+  top: 76px; left: 32px; right: 32px; bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Row 1: User node ── */
+.row-user {
+  display: flex;
+  justify-content: center;
+}
+.user-node {
+  background: #1e3a5f;
+  color: #fff;
+  border-radius: 30px;
+  padding: 8px 28px;
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 14px rgba(30,58,95,.3);
+}
+
+/* ── Arrow down ── */
+.arrow-down {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 14px;
+}
+.arrow-down svg { opacity: .45; }
+
+/* ── Row 2: Two modules ── */
+.row-modules {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+}
+
+.module {
+  flex: 1;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+.mod-a {
+  background: #fff;
+  border: 2px solid #5ec5c0;
+  box-shadow: 0 4px 18px rgba(94,197,192,.15);
+}
+.mod-b {
+  background: #fff;
+  border: 2px solid #f4a57a;
+  box-shadow: 0 4px 18px rgba(244,165,122,.15);
+}
+
+.mod-header {
+  display: flex; align-items: center; gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.mod-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.icon-a { background: #eef8f7; }
+.icon-b { background: #fff4ee; }
+.mod-title { font-size: 13px; font-weight: 800; }
+.mod-title.col-a { color: #3ba8a3; }
+.mod-title.col-b { color: #c06030; }
+.mod-num  { font-size: 10px; color: #aaa; font-weight: 600; }
+
+/* ── IPO columns inside module ── */
+.ipo-cols {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+.ipo-col {
+  flex: 1;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.ipo-i { background: #f4faf9; }
+.ipo-p { background: #eef5fd; }
+.ipo-o { background: #fff8f2; }
+.ipo-lbl {
+  font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .8px; margin-bottom: 5px;
+}
+.ipo-i .ipo-lbl { color: #3ba8a3; }
+.ipo-p .ipo-lbl { color: #2980b9; }
+.ipo-o .ipo-lbl { color: #c06030; }
+.ipo-item {
+  font-size: 10px; color: #4a6070;
+  line-height: 1.6;
+  display: flex; align-items: flex-start; gap: 4px;
+}
+.ipo-dot { width: 4px; height: 4px; border-radius: 50%; margin-top: 5px; flex-shrink:0; }
+.dot-i { background: #5ec5c0; }
+.dot-p { background: #5aabdc; }
+.dot-o { background: #f4a57a; }
+
+/* ── Row 3: Merge arrow ── */
+.row-merge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 12px;
+  position: relative;
+}
+.merge-line {
+  position: absolute;
+  top: 50%;
+  width: 52%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+.merge-line::before, .merge-line::after {
+  content: '';
+  position: absolute;
+  top: 0; width: 2px; background: rgba(94,197,192,.4);
+}
+.merge-line::before { left: 0; height: 100%; }
+.merge-line::after  { right: 0; height: 100%; }
+.merge-h { width: 100%; height: 2px; background: rgba(94,197,192,.35); }
+.merge-arrow-down { position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); }
+
+/* ── Row 4: Output box ── */
+.row-output {
+  display: flex;
+  justify-content: center;
+}
+.output-box {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.out-card {
+  border-radius: 10px;
+  padding: 10px 16px;
+  text-align: center;
+  min-width: 130px;
+}
+.out-gap  { background: #fff0f5; border: 1.5px solid #ffb3cc; }
+.out-warn { background: #fff4ee; border: 1.5px solid #f4a57a; }
+.out-adv  { background: #eef8f7; border: 1.5px solid #5ec5c0; }
+.out-icon { font-size: 18px; margin-bottom: 4px; }
+.out-lbl  { font-size: 10px; font-weight: 700; color: #5a7a90; text-transform: uppercase; letter-spacing: .5px; }
+.out-val  { font-size: 12px; font-weight: 800; color: #1e3a5f; margin-top: 2px; }
+
+/* ── Source line ── */
+.src {
+  position: absolute;
+  bottom: 10px; left: 44px;
+  font-size: 9px; color: #bbb; letter-spacing: .5px;
+}
+
+/* ── Print / export hint ── */
+.export-hint {
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+  background: rgba(255,255,255,.12); color: rgba(255,255,255,.6);
+  padding: 6px 18px; border-radius: 20px; font-size: 12px;
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<div class="slide">
+  <!-- Deco -->
+  <div class="deco d1"></div>
+  <div class="deco d2"></div>
+  <div class="deco d3"></div>
+
+  <!-- Badge -->
+  <div class="slide-label">Introduction to Computer Science</div>
+
+  <!-- Title -->
+  <div class="title-block">
+    <div class="eyebrow">System Architecture</div>
+    <h1>CRUSH CARE — How It Works</h1>
+  </div>
+
+  <!-- Architecture -->
+  <div class="arch">
+
+    <!-- User -->
+    <div class="row-user">
+      <div class="user-node">👤 User</div>
+    </div>
+
+    <!-- Arrow down -->
+    <div class="arrow-down">
+      <svg width="12" height="14" viewBox="0 0 12 14">
+        <line x1="6" y1="0" x2="6" y2="10" stroke="#5ec5c0" stroke-width="2"/>
+        <polygon points="6,14 2,8 10,8" fill="#5ec5c0"/>
+      </svg>
+    </div>
+
+    <!-- Two Modules -->
+    <div class="row-modules">
+
+      <!-- Module A: Crush Index -->
+      <div class="module mod-a">
+        <div class="mod-header">
+          <div class="mod-icon icon-a">💗</div>
+          <div>
+            <div class="mod-num">MODULE 01</div>
+            <div class="mod-title col-a">Crush Index</div>
+          </div>
+        </div>
+        <div class="ipo-cols">
+          <div class="ipo-col ipo-i">
+            <div class="ipo-lbl">Input</div>
+            <div class="ipo-item"><span class="ipo-dot dot-i"></span>10-question survey</div>
+            <div class="ipo-item"><span class="ipo-dot dot-i"></span>Likert scale 1–5</div>
+          </div>
+          <div class="ipo-col ipo-p">
+            <div class="ipo-lbl">Process</div>
+            <div class="ipo-item"><span class="ipo-dot dot-p"></span>Weighted scoring</div>
+            <div class="ipo-item"><span class="ipo-dot dot-p"></span>Sum → normalize</div>
+          </div>
+          <div class="ipo-col ipo-o">
+            <div class="ipo-lbl">Output</div>
+            <div class="ipo-item"><span class="ipo-dot dot-o"></span>Score 0–100</div>
+            <div class="ipo-item"><span class="ipo-dot dot-o"></span>Personality type</div>
+            <div class="ipo-item"><span class="ipo-dot dot-o"></span>Advice</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module B: Message Temperature -->
+      <div class="module mod-b">
+        <div class="mod-header">
+          <div class="mod-icon icon-b">💬</div>
+          <div>
+            <div class="mod-num">MODULE 02</div>
+            <div class="mod-title col-b">Message Temperature</div>
+          </div>
+        </div>
+        <div class="ipo-cols">
+          <div class="ipo-col ipo-i">
+            <div class="ipo-lbl">Input</div>
+            <div class="ipo-item"><span class="ipo-dot dot-i"></span>Chat messages</div>
+            <div class="ipo-item"><span class="ipo-dot dot-i"></span>Reply time *(optional)</div>
+          </div>
+          <div class="ipo-col ipo-p">
+            <div class="ipo-lbl">Process</div>
+            <div class="ipo-item"><span class="ipo-dot dot-p"></span>① Keyword scoring</div>
+            <div class="ipo-item"><span class="ipo-dot dot-p"></span>② Avg char count</div>
+            <div class="ipo-item"><span class="ipo-dot dot-p"></span>③ Reply time classify</div>
+          </div>
+          <div class="ipo-col ipo-o">
+            <div class="ipo-lbl">Output</div>
+            <div class="ipo-item"><span class="ipo-dot dot-o"></span>✨ Text Vibe (0–100)</div>
+            <div class="ipo-item"><span class="ipo-dot dot-o"></span>📏 Length: Short/Mid/Long</div>
+            <div class="ipo-item"><span class="ipo-dot dot-o"></span>⏱️ Speed: Fast/Normal/Slow</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Merge arrow -->
+    <div class="row-merge">
+      <div style="position:relative;width:52%;height:12px;">
+        <!-- horizontal bar -->
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:rgba(94,197,192,.4);"></div>
+        <!-- left drop -->
+        <div style="position:absolute;top:0;left:0;width:2px;height:100%;background:rgba(94,197,192,.4);"></div>
+        <!-- right drop -->
+        <div style="position:absolute;top:0;right:0;width:2px;height:100%;background:rgba(94,197,192,.4);"></div>
+        <!-- centre arrow -->
+        <div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);">
+          <svg width="12" height="8" viewBox="0 0 12 8">
+            <polygon points="6,8 0,0 12,0" fill="rgba(94,197,192,.6)"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output cards -->
+    <div class="row-output">
+      <div class="output-box">
+        <div class="out-card out-gap">
+          <div class="out-icon">📊</div>
+          <div class="out-lbl">Gap Analysis</div>
+          <div class="out-val">Your Heat vs. Their Heat</div>
+        </div>
+        <div class="out-card out-warn">
+          <div class="out-icon">🚨</div>
+          <div class="out-lbl">Danger Alert</div>
+          <div class="out-val">Index &gt;75 &amp; Reply &gt;1 hr</div>
+        </div>
+        <div class="out-card out-adv">
+          <div class="out-icon">💡</div>
+          <div class="out-lbl">Advice</div>
+          <div class="out-val">Personalised suggestion</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /arch -->
+
+  <div class="src">CRUSH CARE · Dept. of Electronic Engineering, Class A · Group 4</div>
+</div>
+
+<div class="export-hint">Press Ctrl+P → Save as PDF to export for slides</div>
+
+</body>
+</html>
