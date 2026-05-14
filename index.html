@@ -302,7 +302,13 @@ footer strong{color:var(--rose);}
       <div class="card-h">💬 Message Temperature</div>
       <div class="card-sub">Paste <strong>their</strong> messages below (one per line) 📋</div>
 
-      <textarea id="msgIn" placeholder="yes&#10;busy&#10;k&#10;maybe&#10;not sure&#10;&#10;or paste real messages here ✍️"></textarea>
+      <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+        <button class="qb" style="border-color:var(--pink);color:var(--pink);font-size:12px;" onclick="loadExample('case2')">💚 Case 2 — Mutual Crush</button>
+        <button class="qb" style="border-color:#1565c0;color:#1565c0;font-size:12px;" onclick="loadExample('case1')">💙 Case 1 — Rational</button>
+        <button class="qb" style="border-color:#c0392b;color:#c0392b;font-size:12px;" onclick="loadExample('case3')">❤️ Case 3 — One-sided</button>
+      </div>
+
+      <textarea id="msgIn" placeholder="yes&#10;busy&#10;k&#10;maybe&#10;not sure&#10;&#10;or click an example above ✍️"></textarea>
       <div class="tip">💡 One line = one message &nbsp;·&nbsp; Text vibe is analyzed automatically ✨</div>
 
       <div class="rt-row">
@@ -694,6 +700,37 @@ function analyzeMsg(){
 }
 
 function setRT(v){ document.getElementById('rtIn').value=v; }
+
+const EXAMPLES = {
+  case2: {
+    msgs: `LMAO yes?? I'm literally typing??
+You're cute when you're nervous lol.
+Btw… have you eaten?
+Wanna grab something together later? :)
+You typed that too fast. Are you excited or something?`,
+    rt: 650
+  },
+  case1: {
+    msgs: `You looked really nice today. I wanted to tell you earlier but I got nervous lol..
+Are you free this weekend? I kinda want to see you again.
+I feel like we get along really well… maybe better than friends?`,
+    rt: 60
+  },
+  case3: {
+    msgs: `yes
+busy
+k
+maybe
+not sure`,
+    rt: 4000
+  }
+};
+
+function loadExample(key) {
+  const ex = EXAMPLES[key];
+  document.getElementById('msgIn').value = ex.msgs;
+  document.getElementById('rtIn').value  = ex.rt;
+}
 
 function resetMsg(){
   document.getElementById('msgIn').value='';
