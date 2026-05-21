@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔒 FocusLock+</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --blue:#1a73e8; --blue-l:#e8f4fd; --blue-bar:#bbdefb;
+  --red:#e53935;  --red-l:#fce8e6;  --red-bar:#ffcdd2;
+  --green:#2e7d32;--green-l:#e6f4ea;--green-bar:#c8e6c9;
+  --orange:#f57f17;--orange-l:#fff8e1;--orange-bar:#ffe082;
+  --bg:#f5f6fa; --card:#fff; --text:#333; --muted:#888; --border:#e8e8e8;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.wrap{max-width:680px;margin:0 auto;padding:16px;}
+
+/* Header */
+.top-header{display:grid;grid-template-columns:2fr 1.2fr 0.8fr;gap:10px;margin-bottom:16px;align-items:center;}
+.logo-block h2{font-size:20px;font-weight:800;margin:0;}
+.logo-block p{font-size:12px;color:var(--muted);margin:0;}
+.pet-chip{background:var(--card);border-radius:12px;padding:8px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.pet-chip .chip-top{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:700;}
+.hbar-bg{background:#eee;border-radius:100px;height:5px;margin:5px 8px 2px;overflow:hidden;}
+.hbar-fill{height:100%;border-radius:100px;transition:width .5s;}
+.chip-sub{font-size:10px;color:#aaa;}
+.streak-chip{background:var(--card);border-radius:12px;padding:10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.streak-num{font-size:22px;font-weight:800;}
+.streak-lbl{font-size:11px;color:#aaa;}
+
+/* Tabs */
+.tabs{display:flex;background:var(--card);border-radius:50px;padding:4px;box-shadow:0 2px 8px rgba(0,0,0,.08);gap:4px;margin-bottom:20px;}
+.tab-btn{flex:1;border:none;background:transparent;border-radius:50px;padding:9px 6px;font-size:13px;font-weight:600;color:#777;cursor:pointer;transition:.2s;}
+.tab-btn.active{background:var(--blue);color:#fff;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* Cards */
+.card{background:var(--card);border-radius:20px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:14px;}
+.card-sm{background:var(--card);border-radius:14px;padding:16px 18px;box-shadow:0 1px 6px rgba(0,0,0,.06);margin-bottom:10px;border-left:4px solid;}
+
+/* Assessment hero */
+.assess-hero{background:linear-gradient(135deg,#667eea,#764ba2);border-radius:20px;padding:28px;text-align:center;margin-bottom:20px;}
+.assess-hero .ah-icon{font-size:40px;}
+.assess-hero h3{color:#fff;margin:8px 0 4px;font-size:18px;}
+.assess-hero p{color:rgba(255,255,255,.85);font-size:13px;margin:0;}
+
+/* Questions */
+.q-block{margin-bottom:18px;}
+.q-block label{font-size:14px;font-weight:700;display:block;margin-bottom:10px;}
+.radio-row{display:flex;gap:8px;flex-wrap:wrap;}
+.radio-btn{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:13px;cursor:pointer;transition:.15s;color:#555;font-weight:500;}
+.radio-btn:hover{border-color:var(--blue);color:var(--blue);}
+.radio-btn.sel{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:700;}
+/* Slider */
+.slider-wrap{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.slider-opts{display:flex;gap:6px;flex-wrap:wrap;}
+.slider-btn{padding:6px 12px;border-radius:16px;border:1.5px solid var(--border);background:#fff;font-size:12px;cursor:pointer;transition:.15s;color:#555;}
+.slider-btn:hover{border-color:var(--blue);color:var(--blue);}
+.slider-btn.sel{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+/* Buttons */
+.btn{width:100%;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:4px;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15);}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-success{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;}
+.btn-danger{background:#f5f5f5;color:#555;border:1.5px solid var(--border);}
+.btn-sm{width:auto;padding:8px 16px;font-size:13px;border-radius:10px;}
+.btn-disabled{background:#eee;color:#bbb;cursor:not-allowed;}
+.btn-disabled:hover{transform:none;box-shadow:none;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:#555;}
+
+/* Result */
+.result-banner{border-radius:20px;padding:28px;text-align:center;margin-bottom:12px;}
+.result-banner .rb-icon{font-size:52px;}
+.result-banner .rb-title{font-size:24px;font-weight:800;margin:10px 0 6px;}
+.result-banner .rb-desc{font-size:14px;line-height:1.6;}
+.sev-badge{border-radius:12px;padding:11px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.sev-badge span:first-child{font-weight:700;font-size:15px;}
+.sev-badge span:last-child{color:#888;font-size:13px;}
+.quote-card{background:#fff;border-left:4px solid;border-radius:0 12px 12px 0;padding:14px 18px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.quote-card span{color:#444;font-style:italic;font-size:15px;}
+.strat-title{font-size:16px;font-weight:800;margin-bottom:10px;}
+
+/* Pet card */
+.pet-card{background:var(--card);border-radius:24px;padding:28px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.08);margin-bottom:14px;}
+.pet-emoji{font-size:80px;line-height:1;margin-bottom:12px;display:inline-block;}
+.pet-name{font-size:18px;font-weight:800;color:#333;}
+.pet-desc{color:#999;font-size:13px;margin:4px 0 16px;}
+.pet-speech{border-radius:16px;padding:12px 18px;margin-bottom:16px;font-size:15px;font-weight:600;}
+.health-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.health-row span:first-child{font-size:13px;color:#888;width:36px;text-align:right;}
+.health-bg{flex:1;background:#f0f0f0;border-radius:100px;height:12px;overflow:hidden;}
+.health-fill{height:100%;border-radius:100px;transition:width .5s;}
+.health-row span:last-child{font-size:13px;font-weight:700;width:38px;}
+.mood-lbl{font-size:12px;margin-bottom:8px;}
+.next-stage{font-size:12px;color:#aaa;margin-top:8px;}
+.next-stage b{color:var(--blue);}
+
+/* Timer */
+.timer-card{border-radius:20px;padding:32px;text-align:center;margin-bottom:14px;}
+.timer-label{font-size:13px;opacity:.7;letter-spacing:2px;margin-bottom:8px;}
+.timer-num{font-size:72px;font-weight:900;font-family:monospace;letter-spacing:4px;line-height:1;margin:0 0 16px;}
+.timer-prog-bg{background:rgba(255,255,255,.2);border-radius:100px;height:10px;overflow:hidden;margin:0 16px 6px;}
+.timer-prog-fill{background:#fff;height:100%;border-radius:100px;transition:width 1s linear;}
+.timer-sub{font-size:12px;opacity:.7;}
+.timer-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+
+/* Duration picker */
+.dur-picker{display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;margin-bottom:12px;}
+.dur-picker button{border:1.5px solid var(--border);background:#fff;border-radius:10px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;transition:.15s;}
+.dur-picker button:hover{border-color:var(--blue);color:var(--blue);}
+.dur-num{display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;background:#fff;border:1.5px solid var(--border);border-radius:10px;}
+.preset-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+.preset-btn{border:1.5px solid var(--border);background:#fff;border-radius:10px;padding:9px 4px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;color:#555;}
+.preset-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.preset-btn:hover:not(.active){border-color:var(--blue);color:var(--blue);}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.stat-card{background:var(--card);border-radius:16px;padding:16px 8px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.07);}
+.stat-ttl{font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.stat-val{font-size:26px;font-weight:800;}
+.stat-sub{font-size:11px;color:#bbb;margin-top:4px;}
+
+/* Evolution timeline */
+.evo-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px;}
+.evo-item{border-radius:14px;padding:8px 2px;text-align:center;border:2px solid;}
+.evo-item .e-emoji{font-size:22px;}
+.evo-item .e-name{font-size:9px;font-weight:700;margin-top:3px;}
+.evo-item .e-req{font-size:9px;}
+
+/* SDG card */
+.sdg-card{background:linear-gradient(135deg,#1565c0,#0d47a1);border-radius:16px;padding:18px 22px;margin-bottom:10px;color:#fff;}
+.sdg-label{font-size:11px;opacity:.7;letter-spacing:1px;margin-bottom:6px;}
+.sdg-item{font-weight:700;font-size:13px;margin-bottom:4px;}
+
+/* Toast */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.2);opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+.toast-success{background:#e8f5e9;color:#2e7d32;border:1.5px solid #a5d6a7;}
+.toast-error{background:#fce8e6;color:#c62828;border:1.5px solid #ef9a9a;}
+
+/* Animations */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes balloon{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-300px) scale(1.2);opacity:0}}
+.float{animation:float 3s ease-in-out infinite;}
+.shake{animation:shake .5s ease;}
+.balloon{position:fixed;font-size:40px;pointer-events:none;animation:balloon 2s ease forwards;}
+
+/* Info / type badge */
+.info-box{background:#e3f2fd;border-radius:12px;padding:12px 18px;margin-bottom:14px;font-size:13px;color:#1565c0;}
+.type-badge{border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.type-badge .tb-icon{font-size:24px;}
+.type-badge .tb-name{font-weight:700;font-size:14px;}
+.type-badge .tb-sub{font-size:12px;color:#888;margin-top:2px;}
+
+hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
+
+@media(max-width:480px){
+  .evo-grid{grid-template-columns:repeat(4,1fr);}
+  .top-header{grid-template-columns:1fr 1fr;}.streak-chip{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="top-header">
+    <div class="logo-block">
+      <h2>🔒 FocusLock+</h2>
+      <p>個人化專注力約束系統</p>
+    </div>
+    <div class="pet-chip" id="headerPet"></div>
+    <div class="streak-chip" id="headerStreak"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(0)">📋 快篩診斷</button>
+    <button class="tab-btn"        onclick="switchTab(1)">🎯 專注模式</button>
+    <button class="tab-btn"        onclick="switchTab(2)">🐾 寵物儀表板</button>
+  </div>
+
+  <!-- Tab 0: Assessment -->
+  <div class="panel active" id="panel-0">
+    <div id="assessContent"></div>
+  </div>
+
+  <!-- Tab 1: Focus -->
+  <div class="panel" id="panel-1">
+    <div id="focusContent"></div>
+  </div>
+
+  <!-- Tab 2: Dashboard -->
+  <div class="panel" id="panel-2">
+    <div id="dashContent"></div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════
+   DATA
+═══════════════════════════════════════ */
+const TYPE_DATA = {
+  "睡前失控型":{icon:"🌙",color:"#1a73e8",bg:"#e8f4fd",bar:"#bbdefb",
+    desc:"你習慣在睡前無限制地刷短影音，嚴重影響睡眠品質與隔天精神狀態。",
+    strategies:[["🔒","22:30 自動啟動鎖定模式，強制進入夜間模式"],
+                ["📵","就寢前 30 分鐘禁止使用任何社群平台"],
+                ["📖","建立睡前 10 分鐘閱讀習慣取代刷手機"],
+                ["⚡","違規一次直接扣健康值，streak 歸零"]],
+    quote:"好的睡眠，是明天最好的投資。",suggestMins:25},
+  "壓力逃避型":{icon:"😓",color:"#e53935",bg:"#fce8e6",bar:"#ffcdd2",
+    desc:"你在感到壓力時會用滑手機逃避現實，但這讓你事後更焦慮、更自責。",
+    strategies:[["📚","先讀書 15 分鐘，才能使用手機 5 分鐘"],
+                ["🎯","設定當日一個小目標，完成才解鎖娛樂時間"],
+                ["🧘","壓力出現時先做 3 次深呼吸，再決定是否拿手機"],
+                ["⚡","跳過專注直接滑手機，寵物健康值大幅下降"]],
+    quote:"逃避不會讓壓力消失，面對才會讓你更強大。",suggestMins:25},
+  "無聊補償型":{icon:"😶",color:"#2e7d32",bg:"#e6f4ea",bar:"#c8e6c9",
+    desc:"你在空閒時下意識拿起手機填滿無聊，但這剝奪了你真正充電休息的機會。",
+    strategies:[["🎨","將手機換成 10 分鐘替代活動（散步、塗鴉、伸展）"],
+                ["📝","準備「無聊清單」：無聊時先看清單再決定"],
+                ["⏱️","每次使用前設定 10 分鐘計時器，時間到強制放下"],
+                ["🌟","連續 3 次成功，寵物進化！"]],
+    quote:"無聊是創造力的起點，別急著填滿它。",suggestMins:25},
+  "起床滑機型":{icon:"☀️",color:"#f57f17",bg:"#fff8e1",bar:"#ffe082",
+    desc:"你早上一起床就滑手機，讓大腦還沒清醒就被資訊轟炸，影響全天專注力。",
+    strategies:[["🚫","起床後 20 分鐘內禁止碰手機（黃金清醒期）"],
+                ["🌅","起床先喝一杯水、做 5 次伸展，啟動身體"],
+                ["📖","早晨閱讀 10 分鐘代替刷短影音"],
+                ["⚡","起床 20 分鐘內使用手機，寵物會難過"]],
+    quote:"掌控早晨，掌控一整天。",suggestMins:25},
+};
+
+const PET_STAGES=[
+  [0, "🥚","神秘的蛋",    "還沒孵化，等待第一次專注…"],
+  [1, "🐣","剛孵出的小鎖","牠睜開眼睛看著你！"],
+  [4, "🐥","活潑的小鎖",  "尾巴搖個不停，超級黏你！"],
+  [8, "🐤","成長中的小鎖","越來越強壯，翅膀長出來了！"],
+  [15,"🐦","少年小鎖",    "開始獨立探索世界了。"],
+  [25,"🦜","成熟的小鎖",  "色彩繽紛，讓所有人羨慕！"],
+  [40,"🦅","傳說的小鎖",  "展翅高飛，無可匹敵的存在！"],
+];
+
+const PET_MOODS=[
+  [85,"超級開心 ✨","#2e7d32",["主人你最棒了！再來一次！","我好滿足喔～繼續加油！","最喜歡你了！♡"]],
+  [65,"很開心 😊",  "#43a047",["做得好！我為你驕傲！","感覺今天很充實呢！","你越來越厲害了！"]],
+  [45,"還可以 😐",  "#f57f17",["加油，我相信你！","今天有點累嗎？","別放棄，我陪著你！"]],
+  [25,"有點難過 😢","#e53935",["主人，我肚子餓了…","你還記得我嗎？","好久沒專注了，我想你…"]],
+  [0, "生病了 🤒",  "#b71c1c",["嗚嗚，我快撐不住了…","主人，救救我…","求求你，讓我們一起專注吧…"]],
+];
+
+/* ═══════════════════════════════════════
+   STATE (localStorage)
+═══════════════════════════════════════ */
+const DEFAULTS={health:80,streak:0,totalSessions:0,successSessions:0,
+  userType:null,severity:0,assessDone:false,focusActive:false,
+  focusEndTime:null,focusDurationMins:25,petPhrase:"嗨！今天要一起專注嗎？",
+  lastResult:null,q1:"< 1小時",q3:null,q4:null,q7:null,q8:null,q12:null};
+
+function loadState(){
+  try{
+    const s=JSON.parse(localStorage.getItem('focuslock')||'{}');
+    return Object.assign({},DEFAULTS,s);
+  }catch{return {...DEFAULTS};}
+}
+function saveState(){localStorage.setItem('focuslock',JSON.stringify(state));}
+
+let state=loadState();
+
+/* ═══════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════ */
+function getStage(n){
+  let s=PET_STAGES[0];
+  for(const row of PET_STAGES){if(n>=row[0])s=row;}
+  return {min:s[0],emoji:s[1],name:s[2],desc:s[3]};
+}
+function getNextStage(n){
+  for(const row of PET_STAGES){if(n<row[0])return{emoji:row[1],name:row[2],needed:row[0]-n};}
+  return null;
+}
+function getMood(h){
+  for(const[threshold,label,color,phrases]of PET_MOODS){
+    if(h>=threshold)return{label,color,phrase:phrases[Math.floor(Math.random()*phrases.length)]};
+  }
+  return{label:"生病了 🤒",color:"#b71c1c",phrase:"嗚嗚…"};
+}
+function healthColor(h){return h>=70?"#43a047":h>=40?"#ffa726":"#ef5350";}
+function fmt(secs){
+  secs=Math.max(0,Math.floor(secs));
+  return `${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`;
+}
+function successRate(){
+  if(!state.totalSessions)return 0;
+  return Math.round(state.successSessions/state.totalSessions*100);
+}
+function doSuccess(){
+  state.health=Math.min(100,state.health+12);
+  state.streak++;
+  state.successSessions++;
+  state.petPhrase=getMood(state.health).phrase;
+  saveState();
+}
+function doFail(){
+  state.health=Math.max(0,state.health-20);
+  state.streak=0;
+  state.petPhrase=getMood(state.health).phrase;
+  saveState();
+}
+
+function determineType(a){
+  const scores={睡前失控型:0,壓力逃避型:0,無聊補償型:0,起床滑機型:0};
+  const q12map={"睡前滑到停不下來":"睡前失控型","一有空就想看，關掉又打開":"無聊補償型",
+                "壓力大就會特別想滑":"壓力逃避型","早起第一件事就是滑手機":"起床滑機型"};
+  if(q12map[a.q12]) scores[q12map[a.q12]]+=30;
+  const q3map={睡前:{睡前失控型:25,無聊補償型:10},早上:{起床滑機型:25},
+               午休:{無聊補償型:20,壓力逃避型:10},晚上:{壓力逃避型:20,睡前失控型:10}};
+  if(q3map[a.q3]) for(const[t,w]of Object.entries(q3map[a.q3])) scores[t]+=w;
+  const q4map={想放鬆:{無聊補償型:15,壓力逃避型:10},無聊:{無聊補償型:20},
+               "焦慮/壓力":{壓力逃避型:20},習慣性拿起來:{起床滑機型:15,睡前失控型:10}};
+  if(q4map[a.q4]) for(const[t,w]of Object.entries(q4map[a.q4])) scores[t]+=w;
+  const q8w={很少:0,偶爾:5,常常:12,幾乎每天:15};
+  scores.睡前失控型+=(q8w[a.q8]||0);
+  const sev=(
+    ({">6小時":4,"4-6小時":3,"2-4小時":2,"1-2小時":1,"< 1小時":0}[a.q1]||0)+
+    ({沒什麼影響:0,有一點:1,明顯影響精神:2,嚴重影響睡眠和生活:3}[a.q7]||0)+
+    ({很少:0,偶爾:1,常常:2,幾乎每天:3}[a.q8]||0)
+  );
+  const type=Object.entries(scores).reduce((a,b)=>b[1]>a[1]?b:a)[0];
+  return{type,sev};
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className=`toast toast-${type} show`;
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+/* ═══════════════════════════════════════
+   BALLOONS
+═══════════════════════════════════════ */
+function launchBalloons(){
+  const emojis=['🎉','🎊','⭐','💫','✨','🌟','🎈'];
+  for(let i=0;i<10;i++){
+    setTimeout(()=>{
+      const b=document.createElement('div');
+      b.className='balloon';
+      b.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      b.style.left=Math.random()*90+'vw';
+      b.style.bottom='0';
+      document.body.appendChild(b);
+      setTimeout(()=>b.remove(),2200);
+    },i*150);
+  }
+}
+
+/* ═══════════════════════════════════════
+   RENDER HEADER
+═══════════════════════════════════════ */
+function renderHeader(){
+  const stage=getStage(state.successSessions);
+  const mood=getMood(state.health);
+  const h=state.health;
+  const hc=healthColor(h);
+  document.getElementById('headerPet').innerHTML=`
+    <div class="chip-top">
+      <span>${stage.emoji}</span>
+      <span style="color:${mood.color}">${mood.label}</span>
+    </div>
+    <div class="hbar-bg"><div class="hbar-fill" style="background:${hc};width:${h}%"></div></div>
+    <div class="chip-sub">健康 ${h}%</div>`;
+  document.getElementById('headerStreak').innerHTML=`
+    <div class="streak-num">🔥 ${state.streak}</div>
+    <div class="streak-lbl">Streak</div>`;
+}
+
+/* ═══════════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════════ */
+let currentTab=0;
+function switchTab(i){
+  document.querySelectorAll('.tab-btn').forEach((b,idx)=>b.classList.toggle('active',idx===i));
+  document.querySelectorAll('.panel').forEach((p,idx)=>p.classList.toggle('active',idx===i));
+  currentTab=i;
+  renderAll();
+}
+
+/* ═══════════════════════════════════════
+   ASSESSMENT
+═══════════════════════════════════════ */
+const OPTS={
+  q1:["< 1小時","1-2小時","2-4小時","4-6小時","> 6小時"],
+  q3:["早上","午休","晚上","睡前"],
+  q4:["想放鬆","無聊","焦慮/壓力","習慣性拿起來"],
+  q8:["很少","偶爾","常常","幾乎每天"],
+  q7:["沒什麼影響","有一點","明顯影響精神","嚴重影響睡眠和生活"],
+  q12:["睡前滑到停不下來","一有空就想看，關掉又打開","壓力大就會特別想滑","早起第一件事就是滑手機"],
+};
+const QLABELS=["Q1　你每天花多少時間刷短影音？","Q2　你最容易失控的時段是？",
+               "Q3　你通常為什麼開始滑手機？","Q4　你睡前滑手機的頻率？",
+               "Q5　手機使用有沒有影響到你的睡眠或精神？","Q6　以下哪個描述最符合你的狀況？"];
+const QKEYS=["q1","q3","q4","q8","q7","q12"];
+
+// Temp answers during quiz
+let tempAnswers={q1:"< 1小時",q3:null,q4:null,q8:null,q7:null,q12:null};
+
+function renderAssessment(){
+  const el=document.getElementById('assessContent');
+  if(!state.assessDone){
+    // Quiz form
+    let qHtml=`<div class="assess-hero">
+      <div class="ah-icon">📋</div>
+      <h3>快速診斷</h3>
+      <p>6 個問題，找出你的數位成癮型態與嚴重程度</p>
+    </div>`;
+    QKEYS.forEach((key,i)=>{
+      const opts=OPTS[key];
+      const isSlider=(key==='q1');
+      qHtml+=`<div class="q-block"><label>${QLABELS[i]}</label>`;
+      if(isSlider){
+        qHtml+=`<div class="slider-opts">`;
+        opts.forEach(o=>{
+          const sel=tempAnswers[key]===o?'sel':'';
+          qHtml+=`<button class="slider-btn ${sel}" onclick="pickAns('${key}','${o}')">${o}</button>`;
+        });
+        qHtml+=`</div>`;
+      } else {
+        qHtml+=`<div class="radio-row">`;
+        opts.forEach(o=>{
+          const sel=tempAnswers[key]===o?'sel':'';
+          qHtml+=`<button class="radio-btn ${sel}" onclick="pickAns('${key}','${o}')">${o}</button>`;
+        });
+        qHtml+=`</div>`;
+      }
+      qHtml+=`</div>`;
+    });
+    const allDone=QKEYS.every(k=>tempAnswers[k]!==null);
+    qHtml+=`<button class="btn ${allDone?'btn-primary':'btn-disabled'}"
+              onclick="${allDone?'submitAssess()':''}" style="margin-top:8px">
+              🔍　分析我的型態</button>`;
+    if(!allDone) qHtml+=`<p style="text-align:center;font-size:12px;color:#aaa;margin-top:8px">請回答所有問題才能送出</p>`;
+    el.innerHTML=qHtml;
+  } else {
+    // Results
+    const ut=state.userType;
+    const sev=state.severity;
+    const d=TYPE_DATA[ut];
+    let sevLabel,sevColor,sevBg;
+    if(sev<=3){sevLabel="🟢 輕度";sevColor="#2e7d32";sevBg="#e6f4ea";}
+    else if(sev<=6){sevLabel="🟡 中度";sevColor="#f9a825";sevBg="#fff8e1";}
+    else if(sev<=8){sevLabel="🟠 高度";sevColor="#e65100";sevBg="#fff3e0";}
+    else{sevLabel="🔴 嚴重";sevColor="#b71c1c";sevBg="#ffebee";}
+
+    let strHtml='';
+    d.strategies.forEach(([icon,text])=>{
+      strHtml+=`<div class="card-sm" style="border-color:${d.color};display:flex;align-items:flex-start;gap:14px">
+        <span style="font-size:20px;flex-shrink:0">${icon}</span>
+        <span style="font-size:14px;line-height:1.6;color:#333">${text}</span>
+      </div>`;
+    });
+
+    el.innerHTML=`
+      <div class="result-banner" style="background:${d.bg};border:2px solid ${d.bar}">
+        <div class="rb-icon">${d.icon}</div>
+        <div class="rb-title" style="color:${d.color}">${ut}</div>
+        <div class="rb-desc" style="color:#555">${d.desc}</div>
+      </div>
+      <div class="sev-badge" style="background:${sevBg}">
+        <span style="color:${sevColor}">${sevLabel} 成癮程度</span>
+        <span>診斷分數 ${sev} / 10</span>
+      </div>
+      <div class="quote-card" style="border-color:${d.color}">
+        <span>"${d.quote}"</span>
+      </div>
+      <div class="strat-title">🛡️ 你的專屬約束策略</div>
+      ${strHtml}
+      <button class="btn btn-outline" onclick="resetAssess()" style="margin-top:8px">🔄　重新測驗</button>`;
+  }
+}
+
+function pickAns(key,val){
+  tempAnswers[key]=val;
+  renderAssessment();
+}
+function submitAssess(){
+  const{type,sev}=determineType(tempAnswers);
+  Object.assign(state,tempAnswers,{userType:type,severity:sev,assessDone:true});
+  saveState();
+  renderAll();
+}
+function resetAssess(){
+  state.assessDone=false;
+  tempAnswers={q1:"< 1小時",q3:null,q4:null,q8:null,q7:null,q12:null};
+  saveState();
+  renderAll();
+}
+
+/* ═══════════════════════════════════════
+   PET CARD HTML
+═══════════════════════════════════════ */
+function petCardHtml(large=false){
+  const stage=getStage(state.successSessions);
+  const mood=getMood(state.health);
+  const h=state.health;
+  const hc=healthColor(h);
+  const nextS=getNextStage(state.successSessions);
+  const anim=(state.lastResult==='fail')?'shake':'float';
+  const sz=large?100:80;
+  const nextLine=nextS
+    ?`<div class="next-stage">再 <b>${nextS.needed}</b> 次成功 → 進化成 ${nextS.emoji} ${nextS.name}</div>`
+    :`<div style="font-size:13px;color:#f57f17;font-weight:700;margin-top:8px">🏆 已達最終進化！傳說等級！</div>`;
+  return `<div class="pet-card">
+    <div class="${anim} pet-emoji" style="font-size:${sz}px">${stage.emoji}</div>
+    <div class="pet-name">${stage.name}</div>
+    <div class="pet-desc">${stage.desc}</div>
+    <div class="pet-speech" style="background:${mood.color}18;border:1.5px solid ${mood.color}44;color:${mood.color}">
+      💬「${state.petPhrase}」</div>
+    <div class="health-row">
+      <span>❤️</span>
+      <div class="health-bg"><div class="health-fill" style="background:${hc};width:${h}%"></div></div>
+      <span style="color:${hc}">${h}%</span>
+    </div>
+    <div class="mood-lbl" style="color:${mood.color}">心情：${mood.label}</div>
+    ${nextLine}
+  </div>`;
+}
+
+/* ═══════════════════════════════════════
+   FOCUS MODE
+═══════════════════════════════════════ */
+let timerInterval=null;
+
+function renderFocus(){
+  const el=document.getElementById('focusContent');
+
+  // Check if timer expired
+  if(state.focusActive && state.focusEndTime && Date.now()>=state.focusEndTime*1000){
+    state.focusActive=false;
+    state.totalSessions++;
+    doSuccess();
+    state.lastResult='timeout';
+    saveState();
+    launchBalloons();
+  }
+
+  let html='';
+
+  // Type badge
+  if(state.userType){
+    const d=TYPE_DATA[state.userType];
+    html+=`<div class="type-badge" style="background:${d.bg}">
+      <span class="tb-icon">${d.icon}</span>
+      <div>
+        <div class="tb-name" style="color:${d.color}">${state.userType}</div>
+        <div class="tb-sub">建議 ${d.suggestMins} 分鐘</div>
+      </div>
+    </div>`;
+  } else {
+    html+=`<div class="info-box">💡 先完成快篩診斷，即可解鎖個人化策略</div>`;
+  }
+
+  // Result feedback banner
+  if(state.lastResult==='timeout'){
+    const stage=getStage(state.successSessions);
+    html+=`<div style="background:#e8f5e9;border-radius:12px;padding:12px 16px;margin-bottom:10px;color:#2e7d32;font-weight:700">
+      ⏰ 時間到！${stage.emoji} 超開心！健康 +12，Streak +1！</div>`;
+    state.lastResult=null; saveState();
+  } else if(state.lastResult==='success'){
+    const stage=getStage(state.successSessions);
+    html+=`<div style="background:#e8f5e9;border-radius:12px;padding:12px 16px;margin-bottom:10px;color:#2e7d32;font-weight:700">
+      🎉 提早完成！${stage.emoji} 跳起來了！健康 +12，Streak +1！</div>`;
+    state.lastResult=null; saveState();
+  } else if(state.lastResult==='fail'){
+    const stage=getStage(state.successSessions);
+    html+=`<div style="background:#fce8e6;border-radius:12px;padding:12px 16px;margin-bottom:10px;color:#c62828;font-weight:700">
+      💔 ${stage.emoji} 難過了… 健康 -20，Streak 歸零。下次加油！</div>`;
+    state.lastResult=null; saveState();
+  }
+
+  // Pet
+  html+=petCardHtml(false);
+
+  if(!state.focusActive){
+    // Duration picker
+    const dur=state.focusDurationMins;
+    html+=`<div class="dur-picker">
+      <button onclick="changeDur(-5)">－ 5 分</button>
+      <div class="dur-num">${dur} 分鐘</div>
+      <button onclick="changeDur(5)">＋ 5 分</button>
+    </div>
+    <div class="preset-row">
+      ${[25,45,60,120].map(v=>`<button class="preset-btn ${dur===v?'active':''}" onclick="setDur(${v})">${v}分</button>`).join('')}
+    </div>`;
+
+    const stage=getStage(state.successSessions);
+    html+=`<div class="timer-card" style="background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;margin-bottom:14px">
+      <div style="font-size:40px;margin-bottom:8px">${stage.emoji}</div>
+      <div style="font-size:14px;opacity:.85">一起專注</div>
+      <div style="font-size:36px;font-weight:800;font-family:monospace;margin:4px 0">${fmt(dur*60)}</div>
+      <div style="font-size:13px;opacity:.8">成功後牠的健康值 +12 ❤️</div>
+    </div>
+    <button class="btn btn-success" onclick="startFocus()">▶️　開始，陪小鎖一起專注！</button>`;
+  } else {
+    // Active timer
+    const remaining=Math.max(0,state.focusEndTime-Date.now()/1000);
+    const totalSecs=state.focusDurationMins*60;
+    const elapsed=totalSecs-remaining;
+    const pct=Math.min(100,Math.round(elapsed/totalSecs*100));
+    const grad=remaining>totalSecs*0.5
+      ?'linear-gradient(135deg,#1a237e,#283593)'
+      :remaining>totalSecs*0.2
+        ?'linear-gradient(135deg,#e65100,#ef6c00)'
+        :'linear-gradient(135deg,#b71c1c,#c62828)';
+    html+=`<div class="timer-card" id="timerCard" style="background:${grad};color:#fff">
+      <div class="timer-label">⏳ 倒數計時中</div>
+      <div class="timer-num" id="timerNum">${fmt(remaining)}</div>
+      <div class="timer-prog-bg"><div class="timer-prog-fill" id="timerProg" style="width:${pct}%"></div></div>
+      <div class="timer-sub">已完成 ${pct}%　目標 ${fmt(totalSecs)}</div>
+    </div>
+    <div class="timer-btns">
+      <button class="btn btn-primary" onclick="earlyDone()">✅　提早完成</button>
+      <button class="btn btn-danger" onclick="failFocus()">😔　我忍不住滑了</button>
+    </div>
+    <div style="background:#fff8e1;border-radius:12px;padding:14px;text-align:center;">
+      <b style="color:#f57f17">${getStage(state.successSessions).emoji} 正在等你回來，撐住！</b>
+    </div>`;
+  }
+
+  el.innerHTML=html;
+
+  // Start/update interval
+  clearInterval(timerInterval);
+  if(state.focusActive){
+    timerInterval=setInterval(()=>{
+      const remaining=Math.max(0,state.focusEndTime-Date.now()/1000);
+      const totalSecs=state.focusDurationMins*60;
+      const pct=Math.min(100,Math.round((totalSecs-remaining)/totalSecs*100));
+      const numEl=document.getElementById('timerNum');
+      const progEl=document.getElementById('timerProg');
+      if(numEl) numEl.textContent=fmt(remaining);
+      if(progEl) progEl.style.width=pct+'%';
+      if(remaining<=0){clearInterval(timerInterval);renderAll();}
+    },1000);
+  }
+}
+
+function changeDur(delta){
+  state.focusDurationMins=Math.max(1,Math.min(120,state.focusDurationMins+delta));
+  saveState(); renderFocus();
+}
+function setDur(v){state.focusDurationMins=v;saveState();renderFocus();}
+
+function startFocus(){
+  state.focusActive=true;
+  state.focusEndTime=Date.now()/1000+state.focusDurationMins*60;
+  state.totalSessions++;
+  state.petPhrase="加油！我會等你回來的！💪";
+  saveState(); renderFocus();
+}
+function earlyDone(){
+  state.focusActive=false;
+  doSuccess(); state.lastResult='success';
+  saveState(); launchBalloons(); renderAll();
+}
+function failFocus(){
+  state.focusActive=false;
+  doFail(); state.lastResult='fail';
+  saveState(); renderAll();
+}
+
+/* ═══════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════ */
+function renderDash(){
+  const el=document.getElementById('dashContent');
+  const stage=getStage(state.successSessions);
+  const mood=getMood(state.health);
+  const h=state.health;
+  const hc=healthColor(h);
+  const nextS=getNextStage(state.successSessions);
+  const rate=successRate();
+  const rateC=rate>=70?"#2e7d32":rate>=40?"#f57f17":"#d32f2f";
+
+  let stageIdx=0;
+  PET_STAGES.forEach((row,i)=>{if(state.successSessions>=row[0])stageIdx=i+1;});
+
+  // Pet card (large)
+  let html=`<h3 style="margin-bottom:12px">🐾 我的寵物</h3>`;
+  html+=petCardHtml(true);
+
+  // Stats
+  html+=`<div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-ttl">Streak</div>
+      <div class="stat-val" style="color:#f57f17">🔥 ${state.streak}</div>
+      <div class="stat-sub">連續成功次數</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ttl">成功率</div>
+      <div class="stat-val" style="color:${rateC}">${rate}%</div>
+      <div class="stat-sub">${state.successSessions}/${state.totalSessions} 次</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ttl">進化階段</div>
+      <div class="stat-val">${stage.emoji}</div>
+      <div class="stat-sub">第 ${stageIdx} 階 / ${PET_STAGES.length} 階</div>
+    </div>
+  </div>`;
+
+  // Evolution
+  html+=`<h4 style="margin:4px 0 10px">🌱 進化歷程</h4>
+  <div class="evo-grid">`;
+  PET_STAGES.forEach(([minS,emoji,name])=>{
+    const unlocked=state.successSessions>=minS;
+    const bg=unlocked?"#e8f5e9":"#f5f5f5";
+    const color=unlocked?"#2e7d32":"#bbb";
+    const border=unlocked?"2px solid #43a047":"2px solid #e0e0e0";
+    const check=unlocked?"✅":"🔒";
+    html+=`<div class="evo-item" style="background:${bg};border:${border}">
+      <div class="e-emoji">${emoji}</div>
+      <div class="e-name" style="color:${color}">${name}</div>
+      <div class="e-req" style="color:${color}">${check} ${minS}次</div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  // User type
+  if(state.userType){
+    const d=TYPE_DATA[state.userType];
+    html+=`<div style="background:${d.bg};border-radius:16px;padding:18px 22px;margin-bottom:12px;border:1.5px solid ${d.bar}">
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="font-size:32px">${d.icon}</span>
+        <div>
+          <div style="font-weight:800;color:${d.color};font-size:15px">型態：${state.userType}</div>
+          <div style="color:#666;font-size:13px;margin-top:2px">${d.desc}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // SDG
+  html+=`<div class="sdg-card">
+    <div class="sdg-label">SDGs 連結</div>
+    <div class="sdg-item">📌 SDG 3 良好健康與福祉 ── 減少手機成癮對心理健康的傷害</div>
+    <div class="sdg-item">📌 SDG 4 優質教育 ── 提升學習專注力，促進有效自學</div>
+  </div>`;
+
+  html+=`<button class="btn btn-outline" onclick="resetAll()" style="margin-top:4px">🔄　重置所有資料</button>`;
+  el.innerHTML=html;
+}
+
+function resetAll(){
+  if(!confirm('確定要重置所有資料嗎？')) return;
+  state=Object.assign({},DEFAULTS);
+  localStorage.removeItem('focuslock');
+  tempAnswers={q1:"< 1小時",q3:null,q4:null,q8:null,q7:null,q12:null};
+  renderAll();
+  showToast('資料已重置！');
+}
+
+/* ═══════════════════════════════════════
+   RENDER ALL
+═══════════════════════════════════════ */
+function renderAll(){
+  renderHeader();
+  if(currentTab===0) renderAssessment();
+  if(currentTab===1) renderFocus();
+  if(currentTab===2) renderDash();
+}
+
+// Init
+renderAll();
+</script>
+</body>
+</html>
