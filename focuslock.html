@@ -131,10 +131,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .evo-item .e-name{font-size:9px;font-weight:700;margin-top:3px;}
 .evo-item .e-req{font-size:9px;}
 
-/* SDG card */
-.sdg-card{background:linear-gradient(135deg,#1565c0,#0d47a1);border-radius:16px;padding:18px 22px;margin-bottom:10px;color:#fff;}
-.sdg-label{font-size:11px;opacity:.7;letter-spacing:1px;margin-bottom:6px;}
-.sdg-item{font-weight:700;font-size:13px;margin-bottom:4px;}
 
 /* Toast */
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.2);opacity:0;transition:opacity .3s;pointer-events:none;}
@@ -751,12 +747,6 @@ function renderDash(){
     </div>`;
   }
 
-  // SDG
-  html+=`<div class="sdg-card">
-    <div class="sdg-label">SDGs 連結</div>
-    <div class="sdg-item">📌 SDG 3 良好健康與福祉 ── 減少手機成癮對心理健康的傷害</div>
-    <div class="sdg-item">📌 SDG 4 優質教育 ── 提升學習專注力，促進有效自學</div>
-  </div>`;
 
   html+=`<button class="btn btn-outline" onclick="resetAll()" style="margin-top:4px">🔄　重置所有資料</button>`;
   el.innerHTML=html;
