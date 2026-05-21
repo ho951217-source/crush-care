@@ -257,7 +257,7 @@ const PET_MOODS=[
 /* ═══════════════════════════════════════
    STATE (localStorage)
 ═══════════════════════════════════════ */
-const DEFAULTS={health:80,streak:0,totalSessions:0,successSessions:0,
+const DEFAULTS={health:80,streak:0,totalSessions:0,successSessions:0,dead:false,
   userType:null,severity:0,assessDone:false,focusActive:false,
   focusEndTime:null,focusDurationMins:25,petPhrase:"嗨！今天要一起專注嗎？",
   lastResult:null,q1:"< 1小時",q3:null,q4:null,q7:null,q8:null,q12:null};
@@ -309,8 +309,16 @@ function doSuccess(){
 function doFail(){
   state.health=Math.max(0,state.health-20);
   state.streak=0;
-  state.petPhrase=getMood(state.health).phrase;
+  if(state.health<=0){state.petPhrase="嗚…我撐不住了…💀";state.dead=true;}
+  else{state.petPhrase=getMood(state.health).phrase;}
   saveState();
+}
+function revive(){
+  state.health=30;
+  state.dead=false;
+  state.petPhrase="謝謝你救了我…我會加油的 🥺";
+  saveState();
+  renderAll();
 }
 
 function determineType(a){
@@ -508,13 +516,30 @@ function resetAssess(){
    PET CARD HTML
 ═══════════════════════════════════════ */
 function petCardHtml(large=false){
-  const stage=getStage(state.successSessions);
-  const mood=getMood(state.health);
   const h=state.health;
+  const sz=large?100:80;
+
+  if(h<=0){
+    return `<div class="pet-card" style="border:2px solid #b71c1c;background:#fff5f5">
+      <div style="font-size:${sz}px;filter:grayscale(1);opacity:.6">💀</div>
+      <div class="pet-name" style="color:#b71c1c">寵物死亡了…</div>
+      <div class="pet-desc">健康歸零，牠離開了你 😢</div>
+      <div class="pet-speech" style="background:#ffebee;border:1.5px solid #ef9a9a;color:#b71c1c">
+        💬「${state.petPhrase}」</div>
+      <div class="health-row">
+        <span>❤️</span>
+        <div class="health-bg"><div class="health-fill" style="background:#b71c1c;width:0%"></div></div>
+        <span style="color:#b71c1c">0%</span>
+      </div>
+      <button class="btn btn-primary" style="margin-top:12px;background:#e53935" onclick="revive()">💉 復活牠（健康回到 30%）</button>
+    </div>`;
+  }
+
+  const stage=getStage(state.successSessions);
+  const mood=getMood(h);
   const hc=healthColor(h);
   const nextS=getNextStage(state.successSessions);
   const anim=(state.lastResult==='fail')?'shake':'float';
-  const sz=large?100:80;
   const nextLine=nextS
     ?`<div class="next-stage">再 <b>${nextS.needed}</b> 次成功 → 進化成 ${nextS.emoji} ${nextS.name}</div>`
     :`<div style="font-size:13px;color:#f57f17;font-weight:700;margin-top:8px">🏆 已達最終進化！傳說等級！</div>`;
