@@ -299,13 +299,6 @@ function successRate(){
   if(!state.totalSessions)return 0;
   return Math.round(state.successSessions/state.totalSessions*100);
 }
-function doSuccess(){
-  state.health=Math.min(100,state.health+12);
-  state.streak++;
-  state.successSessions++;
-  state.petPhrase=getMood(state.health).phrase;
-  saveState();
-}
 function doFail(){
   state.health=Math.max(0,state.health-20);
   state.streak=0;
@@ -313,12 +306,18 @@ function doFail(){
   else{state.petPhrase=getMood(state.health).phrase;}
   saveState();
 }
-function revive(){
-  state.health=30;
-  state.dead=false;
-  state.petPhrase="謝謝你救了我…我會加油的 🥺";
+function doSuccess(){
+  if(state.dead){
+    state.health=30;
+    state.dead=false;
+    state.petPhrase="謝謝你救了我…我會加油的 🥺";
+  } else {
+    state.health=Math.min(100,state.health+12);
+    state.petPhrase=getMood(state.health).phrase;
+  }
+  state.streak++;
+  state.successSessions++;
   saveState();
-  renderAll();
 }
 
 function determineType(a){
@@ -531,7 +530,7 @@ function petCardHtml(large=false){
         <div class="health-bg"><div class="health-fill" style="background:#b71c1c;width:0%"></div></div>
         <span style="color:#b71c1c">0%</span>
       </div>
-      <button class="btn btn-primary" style="margin-top:12px;background:#e53935" onclick="revive()">💉 復活牠（健康回到 30%）</button>
+      <div style="margin-top:12px;font-size:13px;color:#c62828;font-weight:700">💪 完成一次專注任務即可復活牠</div>
     </div>`;
   }
 
