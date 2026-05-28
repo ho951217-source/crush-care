@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>月老後台牽紅線系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06020a;--paper:#120608;--deep:#7b0d0d;--red:#c0392b;
+  --gold:#d4a017;--ivory:#fdf6e3;--border:rgba(212,160,23,.22);
+  --mc:#4a90d9;--fc:#e05c8a;
+}
+html,body{height:100%;font-family:'Noto Serif TC',serif;background:var(--bg);color:var(--ivory);overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(212,160,23,.3);border-radius:2px}
+
+/* ── HERO ── */
+#hero{
+  height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:24px;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 20%,rgba(192,57,43,.18) 0%,transparent 60%);
+}
+.ring{
+  position:absolute;border-radius:50%;border:1px solid rgba(212,160,23,.08);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:ring-pulse 5s ease-in-out infinite;
+}
+@keyframes ring-pulse{0%,100%{opacity:.3;transform:translate(-50%,-50%) scale(1)}50%{opacity:.7;transform:translate(-50%,-50%) scale(1.04)}}
+.hero-badge{
+  font-size:.72rem;letter-spacing:.45em;color:rgba(212,160,23,.55);
+  border:1px solid rgba(212,160,23,.18);padding:5px 18px;border-radius:20px;
+  margin-bottom:20px;position:relative;
+}
+.hero-title{
+  font-size:clamp(1.9rem,5.5vw,3.8rem);font-weight:900;color:var(--gold);
+  letter-spacing:.22em;text-shadow:0 0 40px rgba(212,160,23,.35),0 2px 4px rgba(0,0,0,.6);
+  margin-bottom:10px;position:relative;line-height:1.3;
+}
+.hero-sub{
+  font-size:clamp(.85rem,2vw,1.05rem);color:rgba(253,246,227,.5);
+  letter-spacing:.22em;line-height:1.9;margin-bottom:44px;position:relative;
+}
+.hero-btn{
+  position:relative;padding:15px 50px;
+  background:linear-gradient(135deg,var(--deep),var(--red));
+  color:var(--gold);border:1px solid var(--gold);
+  font-family:'Noto Serif TC',serif;font-size:1.05rem;letter-spacing:.35em;
+  cursor:pointer;border-radius:4px;
+  box-shadow:0 0 28px rgba(192,57,43,.4),inset 0 1px 0 rgba(255,255,255,.08);
+  transition:all .3s;overflow:hidden;
+}
+.hero-btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.06) 50%,transparent 60%);
+  transform:translateX(-100%);transition:transform .5s;
+}
+.hero-btn:hover{box-shadow:0 0 50px rgba(192,57,43,.7),0 0 18px rgba(212,160,23,.25);transform:translateY(-3px)}
+.hero-btn:hover::after{transform:translateX(100%)}
+
+/* ── MAIN ── */
+#main{display:none;flex-direction:column;min-height:100vh}
+#main.on{display:flex}
+.top-bar{
+  padding:14px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:60;
+}
+.top-bar-title{font-size:1rem;font-weight:900;color:var(--gold);letter-spacing:.28em}
+.top-bar-back{
+  background:none;border:1px solid rgba(253,246,227,.13);
+  color:rgba(253,246,227,.4);font-family:'Noto Serif TC',serif;
+  font-size:.78rem;padding:6px 16px;border-radius:4px;
+  cursor:pointer;letter-spacing:.15em;transition:all .2s;
+}
+.top-bar-back:hover{color:var(--ivory);border-color:rgba(253,246,227,.35)}
+
+/* ── ARENA ── */
+.arena{
+  display:grid;grid-template-columns:1fr 180px 1fr;
+  max-width:1080px;width:100%;margin:0 auto;
+  padding:24px 16px 40px;flex:1;gap:0;
+}
+@media(max-width:760px){
+  .arena{grid-template-columns:1fr;padding:14px 12px 32px}
+  .col-action{flex-direction:row;flex-wrap:wrap;justify-content:center;padding:12px 0}
+}
+
+/* Column headers */
+.col-hd{text-align:center;margin-bottom:14px}
+.col-hd-sub{font-size:.7rem;letter-spacing:.3em;color:rgba(253,246,227,.3);margin-bottom:3px}
+.col-hd-name{font-size:1.15rem;font-weight:900;letter-spacing:.25em}
+.col-hd-name.m{color:var(--mc)}.col-hd-name.f{color:var(--fc)}
+
+/* ── CHARACTER CARD ── */
+.card-wrap{position:relative;overflow:hidden;border-radius:10px}
+.char-card{
+  background:linear-gradient(155deg,#1c090a,#0e0405);
+  border:1px solid var(--border);border-radius:10px;
+  padding:18px 16px;position:relative;transition:border-color .25s,box-shadow .25s;
+}
+.char-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0}
+.char-card.m::before{background:linear-gradient(to right,var(--mc),transparent)}
+.char-card.f::before{background:linear-gradient(to right,var(--fc),transparent)}
+.char-card.sel.m{border-color:var(--mc);box-shadow:0 0 0 2px rgba(74,144,217,.3),0 0 24px rgba(74,144,217,.15)}
+.char-card.sel.f{border-color:var(--fc);box-shadow:0 0 0 2px rgba(224,92,138,.3),0 0 24px rgba(224,92,138,.15)}
+
+.card-emoji{position:absolute;top:14px;right:14px;font-size:1.5rem;opacity:.7}
+.card-role-tag{
+  font-size:.68rem;letter-spacing:.22em;padding:3px 10px;
+  border-radius:10px;display:inline-block;margin-bottom:10px;
+}
+.m .card-role-tag{background:rgba(74,144,217,.13);color:var(--mc);border:1px solid rgba(74,144,217,.22)}
+.f .card-role-tag{background:rgba(224,92,138,.13);color:var(--fc);border:1px solid rgba(224,92,138,.22)}
+.card-name{
+  font-size:2rem;font-weight:900;letter-spacing:.35em;color:var(--gold);
+  text-shadow:0 0 16px rgba(212,160,23,.25);
+  margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:11px;
+}
+
+/* Stat bars */
+.stat-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.stat-lbl{width:26px;font-size:.67rem;color:rgba(253,246,227,.42);flex-shrink:0;text-align:right}
+.bar-bg{flex:1;height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;width:0;transition:width .85s cubic-bezier(.4,0,.2,1)}
+.stat-num{width:16px;font-size:.75rem;font-weight:700;flex-shrink:0;text-align:right}
+.stat-total{
+  text-align:right;font-size:.68rem;
+  color:rgba(253,246,227,.28);margin-top:4px;
+}
+.stat-total b{color:var(--gold)}
+
+/* Card text sections */
+.card-section{
+  font-size:.71rem;line-height:1.75;color:rgba(253,246,227,.38);
+  border-top:1px solid var(--border);padding-top:9px;margin-top:9px;
+}
+.card-section-lbl{
+  font-size:.63rem;letter-spacing:.22em;margin-bottom:3px;
+}
+.card-section-lbl.bg{color:rgba(212,160,23,.5)}
+.card-section-lbl.wk{color:rgba(231,76,60,.55)}
+.card-section.wk{color:rgba(253,246,227,.42)}
+
+/* Select button */
+.sel-btn{
+  display:block;width:100%;margin-top:12px;padding:10px;
+  text-align:center;font-family:'Noto Serif TC',serif;
+  font-size:.82rem;letter-spacing:.2em;border-radius:4px;
+  cursor:pointer;transition:all .2s;
+}
+.m .sel-btn{background:rgba(74,144,217,.1);color:var(--mc);border:1px solid rgba(74,144,217,.28)}
+.m .sel-btn:hover,.m .sel-btn.on{background:rgba(74,144,217,.22);box-shadow:0 0 10px rgba(74,144,217,.25)}
+.f .sel-btn{background:rgba(224,92,138,.1);color:var(--fc);border:1px solid rgba(224,92,138,.28)}
+.f .sel-btn:hover,.f .sel-btn.on{background:rgba(224,92,138,.22);box-shadow:0 0 10px rgba(224,92,138,.25)}
+
+/* Carousel nav */
+.cnav{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px}
+.cnav-btn{
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--ivory);cursor:pointer;font-size:.8rem;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.cnav-btn:hover{background:rgba(212,160,23,.1);border-color:var(--gold);color:var(--gold)}
+.dots{display:flex;gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(253,246,227,.13);cursor:pointer;transition:all .2s}
+.dot.on{background:var(--gold);box-shadow:0 0 6px rgba(212,160,23,.55)}
+
+/* Card slide animations */
+@keyframes sOUp  {to{opacity:0;transform:translateY(-28px)}}
+@keyframes sODn  {to{opacity:0;transform:translateY(28px)}}
+@keyframes sIUp  {from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes sIDn  {from{opacity:0;transform:translateY(-28px)}to{opacity:1;transform:translateY(0)}}
+.s-out-up{animation:sOUp .2s ease forwards}
+.s-out-dn{animation:sODn .2s ease forwards}
+.s-in-up {animation:sIUp .25s ease forwards}
+.s-in-dn {animation:sIDn .25s ease forwards}
+
+/* ── ACTION COLUMN ── */
+.col-action{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:0 10px;gap:14px;
+}
+.preview-box{
+  width:100%;background:rgba(0,0,0,.28);
+  border:1px solid var(--border);border-radius:8px;
+  padding:14px 10px;text-align:center;
+  min-height:96px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:7px;
+}
+.prev-name{font-size:.95rem;font-weight:700;letter-spacing:.22em}
+.prev-name.m{color:var(--mc)}.prev-name.f{color:var(--fc)}
+.prev-vs{color:var(--red);font-size:1.3rem;line-height:1}
+.prev-empty{color:rgba(253,246,227,.18);font-size:.72rem;letter-spacing:.18em;line-height:1.7}
+.str-line{
+  width:2px;height:0;border-radius:1px;
+  background:linear-gradient(to bottom,transparent,var(--red),transparent);
+  box-shadow:0 0 6px rgba(192,57,43,.45);transition:height .45s ease;
+}
+.str-line.on{height:36px}
+.act-btn{
+  width:100%;padding:11px 8px;font-family:'Noto Serif TC',serif;
+  font-size:.88rem;letter-spacing:.2em;border-radius:5px;
+  cursor:pointer;transition:all .25s;text-align:center;
+}
+.btn-tie{
+  background:linear-gradient(135deg,var(--deep),var(--red));
+  color:var(--gold);border:1px solid var(--gold);
+  box-shadow:0 0 14px rgba(192,57,43,.28);
+}
+.btn-tie:hover:not(:disabled){
+  box-shadow:0 0 28px rgba(192,57,43,.6),0 0 8px rgba(212,160,23,.25);
+  transform:translateY(-2px);
+}
+.btn-tie:disabled{opacity:.3;pointer-events:none}
+.btn-rnd{
+  background:transparent;color:rgba(253,246,227,.42);
+  border:1px solid rgba(253,246,227,.13);font-size:.75rem;
+}
+.btn-rnd:hover{color:var(--ivory);border-color:rgba(253,246,227,.32)}
+
+/* ── STRING ANIMATION OVERLAY ── */
+#str-overlay{
+  display:none;position:fixed;inset:0;z-index:150;pointer-events:none;
+}
+#str-overlay.on{display:block}
+#str-svg{width:100%;height:100%}
+
+/* ── RESULT OVERLAY ── */
+#result-overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(4,1,1,.92);backdrop-filter:blur(10px);
+  overflow-y:auto;padding:20px 16px;
+}
+#result-overlay.on{display:flex;align-items:flex-start;justify-content:center}
+.r-scroll{
+  max-width:740px;width:100%;margin:auto;
+  background:linear-gradient(158deg,#1c0809,#110405);
+  border:1px solid rgba(212,160,23,.32);border-radius:12px;overflow:hidden;
+  animation:unfurl .55s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 60px rgba(192,57,43,.22),0 0 100px rgba(0,0,0,.55);
+}
+@keyframes unfurl{from{transform:scaleY(.04);opacity:0;transform-origin:top}to{transform:scaleY(1);opacity:1}}
+.r-top{height:4px;background:linear-gradient(to right,transparent,var(--gold),var(--red),var(--gold),transparent)}
+.r-head{
+  padding:26px 30px 18px;text-align:center;
+  border-bottom:1px solid var(--border);background:rgba(0,0,0,.18);
+}
+.r-plot-type{font-size:.72rem;letter-spacing:.42em;color:rgba(212,160,23,.55);margin-bottom:7px}
+.r-title{
+  font-size:clamp(1.2rem,4vw,1.9rem);font-weight:900;color:var(--gold);
+  letter-spacing:.28em;text-shadow:0 0 18px rgba(212,160,23,.35);
+}
+.r-chars{
+  display:flex;align-items:center;justify-content:center;
+  padding:22px 30px;gap:0;
+}
+.r-char{text-align:center;flex:1;max-width:180px}
+.r-char-emoji{font-size:2.2rem;display:block;margin-bottom:5px}
+.r-char-name{font-size:1.3rem;font-weight:900;letter-spacing:.28em;margin-bottom:3px}
+.r-char-name.m{color:var(--mc)}.r-char-name.f{color:var(--fc)}
+.r-char-role{font-size:.68rem;color:rgba(253,246,227,.3);letter-spacing:.18em}
+.r-str-area{
+  flex:0 0 110px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:5px;
+}
+#inner-str-svg{width:110px;height:36px}
+.r-heart{color:var(--red);font-size:1.1rem;animation:hb 1.6s ease-in-out infinite}
+@keyframes hb{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.r-plot-desc{
+  font-size:.68rem;color:rgba(253,246,227,.28);letter-spacing:.1em;
+  line-height:1.65;text-align:center;margin:-4px 30px 16px;
+}
+/* Stats grid */
+.r-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 30px 22px}
+@media(max-width:520px){.r-stats{grid-template-columns:1fr;padding:0 16px 18px}}
+.r-stat-box{
+  background:rgba(0,0,0,.22);border:1px solid var(--border);
+  border-radius:8px;padding:13px 15px;text-align:center;
+}
+.rsb-lbl{font-size:.68rem;color:rgba(253,246,227,.32);letter-spacing:.2em;margin-bottom:5px}
+.rsb-val{font-size:2rem;font-weight:900;line-height:1}
+.rsb-val.fate{color:#e74c3c}.rsb-val.conf{color:#7f8c8d}
+.rsb-val.hid{color:var(--gold)}.rsb-val.fin{font-size:2.4rem}
+.rsb-sub{font-size:.62rem;color:rgba(253,246,227,.22);margin-top:4px}
+/* Fortune */
+.r-fortune{
+  margin:0 30px 22px;border:1px solid rgba(212,160,23,.18);
+  border-radius:8px;padding:15px 18px;background:rgba(212,160,23,.04);text-align:center;
+}
+@media(max-width:520px){.r-fortune{margin:0 16px 18px}}
+.rf-lbl{font-size:.68rem;letter-spacing:.28em;color:rgba(212,160,23,.45);margin-bottom:5px}
+.rf-val{font-size:1.05rem;font-weight:700;color:var(--gold);letter-spacing:.3em;margin-bottom:10px}
+.oracle-lbl{font-size:.62rem;letter-spacing:.22em;color:rgba(192,57,43,.7);margin-bottom:5px}
+.oracle-txt{font-size:.86rem;color:rgba(253,246,227,.58);line-height:1.85;font-style:italic;border-top:1px solid var(--border);padding-top:9px}
+/* Story */
+.r-story{margin:0 30px 26px;padding:18px;background:rgba(0,0,0,.18);border-left:2px solid var(--red);border-radius:0 6px 6px 0}
+@media(max-width:520px){.r-story{margin:0 16px 22px}}
+.rs-lbl{font-size:.68rem;letter-spacing:.28em;color:rgba(212,160,23,.45);margin-bottom:9px}
+.rs-txt{font-size:.88rem;line-height:2;color:rgba(253,246,227,.73)}
+/* Close */
+.r-close{
+  display:block;width:calc(100% - 60px);margin:0 30px 26px;
+  padding:13px;background:none;color:rgba(253,246,227,.35);
+  border:1px solid rgba(253,246,227,.1);border-radius:4px;
+  font-family:'Noto Serif TC',serif;font-size:.82rem;
+  letter-spacing:.25em;cursor:pointer;transition:all .2s;text-align:center;
+}
+@media(max-width:520px){.r-close{width:calc(100% - 32px);margin:0 16px 22px}}
+.r-close:hover{color:var(--ivory);border-color:rgba(253,246,227,.28)}
+
+/* page-in anim */
+.page-in{animation:pageIn .5s ease}
+@keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="ring" style="width:280px;height:280px"></div>
+  <div class="ring" style="width:500px;height:500px;animation-delay:-1.5s"></div>
+  <div class="ring" style="width:720px;height:720px;animation-delay:-3s"></div>
+  <div class="hero-badge">幽冥婚牘　命定之書</div>
+  <h1 class="hero-title">月老後台<br>牽紅線系統</h1>
+  <p class="hero-sub">翻開姻緣簿，替凡人牽一段命中紅線。</p>
+  <button class="hero-btn" onclick="enterMain()">進入月老後台</button>
+</section>
+
+<!-- ═══ MAIN ═══ -->
+<section id="main">
+  <div class="top-bar">
+    <div class="top-bar-title">🏮 月老後台　牽紅線系統</div>
+    <button class="top-bar-back" onclick="exitMain()">← 返回</button>
+  </div>
+
+  <div class="arena">
+    <!-- Males -->
+    <div>
+      <div class="col-hd">
+        <div class="col-hd-sub">男性命格</div>
+        <div class="col-hd-name m">男　命</div>
+      </div>
+      <div class="card-wrap" id="m-area"></div>
+      <div class="cnav">
+        <button class="cnav-btn" onclick="nav('m',-1)">▲</button>
+        <div class="dots" id="m-dots"></div>
+        <button class="cnav-btn" onclick="nav('m',1)">▼</button>
+      </div>
+    </div>
+
+    <!-- Action -->
+    <div class="col-action">
+      <div class="preview-box" id="preview"></div>
+      <div class="str-line" id="str-line"></div>
+      <button class="act-btn btn-tie" id="tie-btn" disabled onclick="doTie()">牽　紅　線</button>
+      <button class="act-btn btn-rnd" onclick="doRandom()">🎲 月老隨機牽線</button>
+    </div>
+
+    <!-- Females -->
+    <div>
+      <div class="col-hd">
+        <div class="col-hd-sub">女性命格</div>
+        <div class="col-hd-name f">女　命</div>
+      </div>
+      <div class="card-wrap" id="f-area"></div>
+      <div class="cnav">
+        <button class="cnav-btn" onclick="nav('f',-1)">▲</button>
+        <div class="dots" id="f-dots"></div>
+        <button class="cnav-btn" onclick="nav('f',1)">▼</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- String animation overlay -->
+<div id="str-overlay">
+  <svg id="str-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="sg">
+        <feGaussianBlur stdDeviation="2.5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <path id="str-path" fill="none" stroke="#c0392b" stroke-width="2.5"
+          stroke-linecap="round" filter="url(#sg)"
+          stroke-dasharray="2000" stroke-dashoffset="2000"/>
+  </svg>
+</div>
+
+<!-- Result overlay -->
+<div id="result-overlay">
+  <div class="r-scroll">
+    <div class="r-top"></div>
+    <div id="r-content"></div>
+    <button class="r-close" onclick="closeResult()">收起命書，繼續配對</button>
+  </div>
+</div>
+
+<script>
+/* ════════════ DATA ════════════ */
+const SK = ['外貌','健康','財富','家庭','身材'];
+const SC = {外貌:'#e91e8c',健康:'#27ae60',財富:'#f39c12',家庭:'#3498db',身材:'#e67e22'};
+
+const MALES = [
+  {id:'m1',name:'韋昀',role:'落第書生',emoji:'📖',
+   stats:{外貌:8,健康:5,財富:2,家庭:3,身材:5},
+   bg:'連考七年落榜，靠替人寫書信、題詩維生。人人都說他可惜了那張臉，卻沒人真的相信他有前途。',
+   wk:'太在意尊嚴。別人幫他，他會先覺得自己被看不起。',
+   plots:['幽冥書中早有名','千里異鄉','花子之謎']},
+  {id:'m2',name:'程烈',role:'邊關武將',emoji:'⚔️',
+   stats:{外貌:6,健康:10,財富:7,家庭:5,身材:10},
+   bg:'從邊關回京的將軍，臉上有刀疤，氣場很冷。眾人怕他，媒人也怕他。',
+   wk:'把保護當成距離。他越在意一個人，越想把對方推遠。',
+   plots:['仇家紅線','誤刺成緣','生死同命']},
+  {id:'m3',name:'沈豐',role:'富商長子',emoji:'💰',
+   stats:{外貌:5,健康:4,財富:10,家庭:8,身材:6},
+   bg:'富商長子，從小什麼都有，卻逃過三次婚。大家以為他挑剔，其實他只是害怕婚姻變成交易。',
+   wk:'習慣用錢解決問題，但真正的感情不能用錢買。',
+   plots:['誤刺成緣','花子之謎','有緣無分']},
+  {id:'m4',name:'王田',role:'農家子弟',emoji:'🌾',
+   stats:{外貌:7,健康:10,財富:3,家庭:6,身材:9},
+   bg:'進城賣糧，不會吟詩、不會說情話。但他記性很好，別人隨口說的事，他都會放在心上。',
+   wk:'太誠實，不會包裝自己。喜歡一個人也只會傻傻付出。',
+   plots:['千里異鄉','幽冥書中早有名','舊物重逢']},
+  {id:'m5',name:'李聽風',role:'說書人',emoji:'🎭',
+   stats:{外貌:9,健康:5,財富:4,家庭:4,身材:7},
+   bg:'茶館裡最受歡迎的說書人，說過一千個愛情故事。姑娘們都愛聽他說情話，卻沒人相信他會真心。',
+   wk:'太會演深情，所以真正認真時，反而沒人相信。',
+   plots:['花子之謎','舊物重逢','有緣無分']},
+];
+
+const FEMALES = [
+  {id:'f1',name:'謝芸',role:'名門閨秀',emoji:'🌸',
+   stats:{外貌:9,健康:5,財富:8,家庭:9,身材:6},
+   bg:'名門閨秀，琴棋書畫樣樣合格。她看起來溫順，其實早就厭倦被安排好的人生。',
+   wk:'不敢承認自己想逃。越喜歡一個人，越會假裝冷靜。',
+   plots:['千里異鄉','仇家紅線','幽冥書中早有名']},
+  {id:'f2',name:'白刃',role:'江湖俠女',emoji:'🗡️',
+   stats:{外貌:7,健康:10,財富:3,家庭:2,身材:9},
+   bg:'江湖俠女，殺伐果斷，不信姻緣，只信刀劍。師父死前留下半截紅線，說她未來會遇見一個「殺不得，也放不下」的人。',
+   wk:'怕心軟。她覺得一旦有了牽掛，就會變弱。',
+   plots:['仇家紅線','生死同命','誤刺成緣']},
+  {id:'f3',name:'任珠',role:'商賈之女',emoji:'💎',
+   stats:{外貌:6,健康:8,財富:9,家庭:7,身材:7},
+   bg:'一個人撐起家族生意，見過太多男人用甜言蜜語換利益。她不是不想愛，是已經懶得分辨真假。',
+   wk:'太清醒。別人靠近她，第一反應不是感動，而是計算對方想得到什麼。',
+   plots:['花子之謎','幽冥書中早有名','有緣無分']},
+  {id:'f4',name:'陳婉',role:'賣菜女',emoji:'🥬',
+   stats:{外貌:8,健康:9,財富:1,家庭:2,身材:8},
+   bg:'在市集賣菜長大，眉間有一道舊疤。她嘴巴利，動作快，從不讓人看見自己可憐。',
+   wk:'很難相信出身好的人。她怕對方只是把她當成一時新鮮。',
+   plots:['誤刺成緣','千里異鄉','舊物重逢']},
+  {id:'f5',name:'裴金娘',role:'刺史千金',emoji:'👑',
+   stats:{外貌:10,健康:6,財富:10,家庭:10,身材:8},
+   bg:'刺史千金，拒絕過二十個求親者。太漂亮、太富貴，所有人都想娶她，但沒有人真的看見她。',
+   wk:'要求很高，但其實她自己也不知道自己要什麼。想被理解，又不相信有人能理解她。',
+   plots:['幽冥書中早有名','花子之謎','有緣無分']},
+];
+
+const CANON = {
+  'm1_f5':{plot:'幽冥書中早有名',fate:88,conf:72,hid:10,fin:76,
+    luck:'上籤，命中有緣',
+    oracle:'門第不合，心意卻合。世人看見貧富，月老看見知己。',
+    story:'最窮的人，配了最富的人。韋昀落榜那年，裴家剛好在宋城辦文會。他混進去蹭飯，卻在席上即興作了一首詩，讓裴金娘第一次覺得，有個人說出了她想說卻不敢說的話。她父親查了他的家底，搖頭。她說：「那就等他考上。」'},
+  'm2_f2':{plot:'仇家紅線',fate:91,conf:85,hid:8,fin:74,
+    luck:'上籤，虐戀成真',
+    oracle:'你們不是不合，是太像。紅線纏在刀鋒上，割不斷，卻會痛。',
+    story:'兩個人都習慣用武力解決問題，偏偏對彼此的武力無效。程烈回城後剿了一支山賊，而白刃的師門恰好曾收留過其中幾人。兩人在城門口第一次見面，就拔了劍。打平之後，誰也沒走。'},
+  'm3_f4':{plot:'誤刺成緣',fate:82,conf:88,hid:18,fin:72,
+    luck:'上籤，命書反轉',
+    oracle:'你以為那是傷口，其實是命運留下的記號。欠下的，不只是一道疤。',
+    story:'沈豐年輕時為逃一樁婚事，指使僕人在市集鬧事，卻無意中傷了一個賣菜的小女孩，留下眉間疤痕。他當時給了一錠銀子，轉身忘了。多年後，父親給他說親，對方正是陳婉。相見時，他看見那道疤，臉色全變。'},
+  'm4_f1':{plot:'千里異鄉',fate:86,conf:68,hid:12,fin:80,
+    luck:'上籤，溫柔救贖',
+    oracle:'他不懂你的家世，卻懂得先問你痛不痛。這一問，勝過滿城聘禮。',
+    story:'一個從未見過世界，一個從未走出過宅院。王田進城賣糧，在街上看見謝芸的馬車翻了，二話不說上去扶。謝芸一生中第一次被一個不認識她家世的人幫忙——對方問的不是「你是誰家的女兒」，而是「你有沒有受傷」。她回家之後，把那句話想了很久。'},
+  'm5_f3':{plot:'花子之謎',fate:84,conf:60,hid:10,fin:84,
+    luck:'上上籤，歡喜冤家',
+    oracle:'他教你相信故事，你教他面對現實。帳本與話本，原來也能寫在同一頁。',
+    story:'一個活在故事裡，一個活在帳本裡。任珠聽過李聽風說書，覺得他說的愛情都是假的，當場指出破綻，兩人在茶館爭論了一個時辰。李聽風輸了。他第一次遇到有人能拆穿他說的故事——因為任珠每個字都在算那個故事裡的成本。回去之後他發現，他把那個女人寫進了新故事裡，自己都沒察覺。'},
+};
+
+const PLOT_DESC = {
+  '幽冥書中早有名':'身份差距懸殊，卻心意相通，月老早已在幽冥書上刻下兩人姓名。',
+  '仇家紅線':'兩人一開始互相敵對，卻在被迫同行中發現彼此。',
+  '誤刺成緣':'一方曾無意傷害另一方，舊傷成為相認的記號，緣份因此反轉。',
+  '千里異鄉':'兩人出身截然不同，在陌生地方相遇，成為彼此第一個歸處。',
+  '花子之謎':'一方浪漫感性，一方現實清醒，互相拆台卻互相吸引。',
+  '舊物重逢':'兩人因童年信物或舊日記憶再次連結，緣份早在多年前已種下。',
+  '生死同命':'兩人在危機中救下彼此，共患難後再難分離。',
+  '有緣無分':'緣份深厚，卻終究錯過。月老嘆道：線已繫，人未至。',
+};
+
+/* ════════════ ALGORITHM ════════════ */
+function calcFate(m,f){
+  let s=0;
+  SK.forEach(k=>{
+    const avg=(m.stats[k]+f.stats[k])/2;
+    const diff=Math.abs(m.stats[k]-f.stats[k]);
+    s+=avg*3+diff*4;
+  });
+  return Math.min(99,Math.max(40,Math.round(s/7)));
+}
+function calcConf(m,f){
+  const wg=Math.abs(m.stats['財富']-f.stats['財富']);
+  const fg=Math.abs(m.stats['家庭']-f.stats['家庭']);
+  const hd=Math.abs(m.stats['健康']-f.stats['健康']);
+  return Math.min(95,Math.max(18,Math.round(wg*8+fg*6+hd*2+14)));
+}
+function calcHid(m,f){
+  const ol=m.plots.filter(p=>f.plots.includes(p)).length;
+  return ol*6+Math.round(Math.random()*4+2);
+}
+function calcFin(fate,conf,hid){return Math.min(98,Math.max(18,Math.round(fate-conf*.35+hid)));}
+function getLuck(s){
+  if(s>=90)return'上上籤，天賜良緣';
+  if(s>=75)return'上籤，命中有緣';
+  if(s>=60)return'中籤，努力可成';
+  if(s>=45)return'下籤，緣份尚淺';
+  return'凶籤，孽緣難解';
+}
+function getPlot(m,f){
+  const ol=m.plots.filter(p=>f.plots.includes(p));
+  if(ol.length)return ol[0];
+  const wg=Math.abs(m.stats['財富']-f.stats['財富']);
+  const fg=Math.abs(m.stats['家庭']-f.stats['家庭']);
+  if(wg>=6||fg>=6)return'幽冥書中早有名';
+  if(m.stats['健康']+f.stats['健康']>=18)return'生死同命';
+  const all=Object.keys(PLOT_DESC);
+  return all[Math.floor(Math.random()*all.length)];
+}
+function dynOracle(m,f,plot){
+  const map={
+    '幽冥書中早有名':`${m.name}與${f.name}，門第雖異，心意卻早在幽冥書中寫在同一頁。月老說：世人看見差距，老夫看見知己。`,
+    '仇家紅線':`刀劍相向之後，才發現彼此是最了解對方的人。${m.name}與${f.name}，這根紅線纏在刃上，割不斷。`,
+    '誤刺成緣':`${m.name}曾無意間傷了${f.name}，舊傷成了命運的記號。月老說：欠下的，不只是一道疤，是一段餘生。`,
+    '千里異鄉':`${m.name}從遠方來，${f.name}困於此處。兩個陌生人，在最不可能的時刻，成了彼此唯一熟悉的臉。`,
+    '花子之謎':`一個把感情說得天花亂墜，一個把感情算得分毫不差。月老說：帳本與話本，原來也能寫在同一頁。`,
+    '舊物重逢':`${m.name}與${f.name}的緣份，早在多年前便已種下。月老說：你以為是偶然，其實早在命書上寫好了。`,
+    '生死同命':`他救了她，她也救了他。月老翻了翻婚牘說：命都給出去了，這輩子算是還不清了。`,
+    '有緣無分':`緣份到了，時機卻錯了。月老嘆道：線已繫上，人卻走散。有緣無分，是最殘忍的一種命。`,
+  };
+  return map[plot]||`月老看了看${m.name}與${f.name}的命書，沉默片刻，說：「這一對，緣份自有天定，不需老夫多言。」`;
+}
+function dynStory(m,f,plot){
+  const map={
+    '幽冥書中早有名':`${m.name}與${f.name}的相遇，旁人看起來是偶然，月老卻說那是命書上早已記載的一刻。${m.name}${m.bg.slice(0,20).replace(/。.*$/,'')}；${f.name}${f.bg.slice(0,20).replace(/。.*$/,'')}。兩人相差懸殊，卻在某個平凡的午後，看見了對方眼中的真實。`,
+    '仇家紅線':`${m.name}與${f.name}的第一次相遇，不是握手，是對峙。他們站在各自立場的對面，心裡都覺得對方難以理解。卻在一次不得不並肩的處境中，發現彼此是世上最懂自己的人。`,
+    '誤刺成緣':`多年前，${m.name}無意中傷害了${f.name}，那件事他早已忘記，她卻記了一輩子。重逢那一刻，${m.name}認出了那道舊傷，臉色驟變。${f.name}說：「你認得這道疤？」月老在幽冥遠遠看著，點了點頭。`,
+    '千里異鄉':`${m.name}從遠方來到這座城，什麼規矩都不懂。${f.name}困在這裡太久，什麼都懂，卻什麼都做不了。他們在最陌生的時刻遇見彼此，卻像是找到了多年來一直在找的那個人。`,
+    '花子之謎':`${m.name}是個浪漫的人，${f.name}是個現實的人。第一次相遇，他說了一句他覺得很動人的話，她立刻指出了其中的破綻。他愣了一下，然後笑了。從那之後，他再也不說那些套路了。`,
+    '舊物重逢':`${m.name}一直保存著一樣舊物，說不清為什麼。${f.name}也是。直到有一天，他們各自拿出那樣東西，才發現那是同一段故事的兩半。月老說：緣份，早就種下了。`,
+    '生死同命':`那一天，${m.name}與${f.name}同時身陷危境。他救了她，她也救了他。事後，兩個人都說：不過是路見不平。月老翻了翻婚牘說：命都給出去了，還叫路見不平？`,
+    '有緣無分':`${m.name}遇見${f.name}的那一刻，兩人都知道這不是普通的相遇。然而命運在這裡開了一個殘忍的玩笑——他們在最不合適的時間，最不合適的地點，相遇了。月老嘆道：線已繫，人未至。`,
+  };
+  return map[plot]||`${m.name}與${f.name}的故事，月老說，是那種說不清從哪裡開始的緣份——就這樣，走著走著，走進了彼此的生命裡。`;
+}
+function getMatch(m,f){
+  const key=m.id+'_'+f.id;
+  if(CANON[key])return{...CANON[key],male:m,female:f,isCanon:true};
+  const plot=getPlot(m,f);
+  const fate=calcFate(m,f);
+  const conf=calcConf(m,f);
+  const hid=calcHid(m,f);
+  const fin=calcFin(fate,conf,hid);
+  return{plot,fate,conf,hid,fin,luck:getLuck(fin),
+    oracle:dynOracle(m,f,plot),story:dynStory(m,f,plot),
+    male:m,female:f,isCanon:false};
+}
+
+/* ════════════ STATE ════════════ */
+const S={mIdx:0,fIdx:0,selM:null,selF:null,navDir:1};
+
+/* ════════════ RENDER CARD ════════════ */
+function cardHTML(c,g){
+  const tot=SK.reduce((a,k)=>a+c.stats[k],0);
+  const isSel=g==='m'?(S.selM&&S.selM.id===c.id):(S.selF&&S.selF.id===c.id);
+  const bars=SK.map(k=>`
+    <div class="stat-row">
+      <span class="stat-lbl">${k}</span>
+      <div class="bar-bg">
+        <div class="bar-fill" data-w="${c.stats[k]*10}" style="background:${SC[k]}"></div>
+      </div>
+      <span class="stat-num">${c.stats[k]}</span>
+    </div>`).join('');
+  return`<div class="char-card ${g} ${isSel?'sel':''}" id="card-${c.id}">
+    <span class="card-emoji">${c.emoji}</span>
+    <div class="card-role-tag">${c.role}</div>
+    <div class="card-name">${c.name}</div>
+    <div>${bars}</div>
+    <div class="stat-total">五項總分：<b>${tot}</b> / 50</div>
+    <div class="card-section">
+      <div class="card-section-lbl bg">人物背景</div>${c.bg}
+    </div>
+    <div class="card-section wk">
+      <div class="card-section-lbl wk">愛情弱點</div>${c.wk}
+    </div>
+    <button class="sel-btn ${isSel?'on':''}"
+            onclick="selChar('${g}','${c.id}')">
+      ${isSel?'✦ 已選擇':'選擇此人'}
+    </button>
+  </div>`;
+}
+
+function renderCol(g){
+  const chars=g==='m'?MALES:FEMALES;
+  const idx=g==='m'?S.mIdx:S.fIdx;
+  const area=document.getElementById(g+'-area');
+  area.innerHTML=cardHTML(chars[idx],g);
+  // Animate bars
+  requestAnimationFrame(()=>{
+    area.querySelectorAll('.bar-fill').forEach(b=>{
+      setTimeout(()=>{b.style.width=b.dataset.w+'%';},60);
+    });
+  });
+  // Dots
+  document.getElementById(g+'-dots').innerHTML=
+    chars.map((_,i)=>`<div class="dot ${i===idx?'on':''}"
+      onclick="jump('${g}',${i})"></div>`).join('');
+}
+
+/* ════════════ NAVIGATION ════════════ */
+function nav(g,dir){
+  const chars=g==='m'?MALES:FEMALES;
+  const area=document.getElementById(g+'-area');
+  const card=area.querySelector('.char-card');
+  if(!card){doNav(g,dir);return;}
+  S.navDir=dir;
+  card.classList.add(dir>0?'s-out-up':'s-out-dn');
+  setTimeout(()=>doNav(g,dir),200);
+}
+function doNav(g,dir){
+  const chars=g==='m'?MALES:FEMALES;
+  const len=chars.length;
+  if(g==='m') S.mIdx=(S.mIdx+dir+len)%len;
+  else         S.fIdx=(S.fIdx+dir+len)%len;
+  renderCol(g);
+  const card=document.getElementById(g===`m`?`card-${MALES[S.mIdx].id}`:`card-${FEMALES[S.fIdx].id}`);
+  if(card) card.classList.add(S.navDir>0?'s-in-up':'s-in-dn');
+}
+function jump(g,idx){
+  const cur=g==='m'?S.mIdx:S.fIdx;
+  S.navDir=idx>cur?1:-1;
+  if(g==='m') S.mIdx=idx; else S.fIdx=idx;
+  renderCol(g);
+}
+
+/* ════════════ SELECTION ════════════ */
+function selChar(g,id){
+  if(g==='m'){
+    const c=MALES.find(x=>x.id===id);
+    S.selM=(S.selM&&S.selM.id===id)?null:c;
+  } else {
+    const c=FEMALES.find(x=>x.id===id);
+    S.selF=(S.selF&&S.selF.id===id)?null:c;
+  }
+  renderCol(g);
+  updatePreview();
+}
+function updatePreview(){
+  const m=S.selM, f=S.selF;
+  const pv=document.getElementById('preview');
+  const tb=document.getElementById('tie-btn');
+  const sl=document.getElementById('str-line');
+  if(!m&&!f){
+    pv.innerHTML='<div class="prev-empty">尚未選擇<br><span style="font-size:.65rem">請從左右命格中各選一位</span></div>';
+    tb.disabled=true; sl.classList.remove('on'); return;
+  }
+  let h='';
+  h+=m?`<div class="prev-name m">${m.emoji} ${m.name}</div>`
+      :`<div class="prev-empty" style="font-size:.72rem">待選男命</div>`;
+  if(m&&f){h+='<div class="prev-vs">❤</div>';sl.classList.add('on');}
+  else sl.classList.remove('on');
+  h+=f?`<div class="prev-name f">${f.emoji} ${f.name}</div>`
+      :`<div class="prev-empty" style="font-size:.72rem">待選女命</div>`;
+  pv.innerHTML=h;
+  tb.disabled=!(m&&f);
+}
+
+/* ════════════ MATCHING ════════════ */
+function doTie(){
+  if(!S.selM||!S.selF)return;
+  animStr(S.selM,S.selF);
+}
+function doRandom(){
+  const m=MALES[Math.floor(Math.random()*MALES.length)];
+  const f=FEMALES[Math.floor(Math.random()*FEMALES.length)];
+  S.selM=m; S.selF=f;
+  S.mIdx=MALES.indexOf(m); S.fIdx=FEMALES.indexOf(f);
+  renderCol('m'); renderCol('f'); updatePreview();
+  setTimeout(()=>animStr(m,f),350);
+}
+
+function animStr(m,f){
+  const mc=document.getElementById('card-'+m.id);
+  const fc=document.getElementById('card-'+f.id);
+  const overlay=document.getElementById('str-overlay');
+  const path=document.getElementById('str-path');
+
+  if(mc&&fc){
+    const mr=mc.getBoundingClientRect(), fr=fc.getBoundingClientRect();
+    const x1=mr.right, y1=mr.top+mr.height/2;
+    const x2=fr.left,  y2=fr.top+fr.height/2;
+    const cx=(x1+x2)/2, cy=Math.min(y1,y2)-70;
+    path.setAttribute('d',`M${x1},${y1} Q${cx},${cy} ${x2},${y2}`);
+    path.style.strokeDasharray='2000';
+    path.style.strokeDashoffset='2000';
+    overlay.classList.add('on');
+    path.animate(
+      [{strokeDashoffset:'2000'},{strokeDashoffset:'0'}],
+      {duration:850,easing:'ease-out',fill:'forwards'}
+    ).onfinish=()=>{
+      setTimeout(()=>{overlay.classList.remove('on');showResult(getMatch(m,f));},280);
+    };
+  } else {
+    showResult(getMatch(m,f));
+  }
+}
+
+/* ════════════ RESULT ════════════ */
+function finColor(s){
+  if(s>=80)return'#2ecc71';
+  if(s>=65)return'#f39c12';
+  if(s>=50)return'#e67e22';
+  return'#e74c3c';
+}
+function showResult(d){
+  const{male:m,female:f,plot,fate,conf,hid,fin,luck,oracle,story,isCanon}=d;
+  const fc=finColor(fin);
+  document.getElementById('r-content').innerHTML=`
+    <div class="r-head">
+      <div class="r-plot-type">${isCanon?'✦ 命定劇情線 ✦':'✦ 劇情線'}　${plot}</div>
+      <div class="r-title">${m.name} × ${f.name}</div>
+    </div>
+    <div class="r-chars">
+      <div class="r-char">
+        <span class="r-char-emoji">${m.emoji}</span>
+        <div class="r-char-name m">${m.name}</div>
+        <div class="r-char-role">${m.role}</div>
+      </div>
+      <div class="r-str-area">
+        <svg id="inner-str-svg" viewBox="0 0 110 36" xmlns="http://www.w3.org/2000/svg">
+          <defs><filter id="sg2">
+            <feGaussianBlur stdDeviation="2" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter></defs>
+          <path id="istr" fill="none" stroke="#c0392b" stroke-width="2"
+                stroke-dasharray="220" stroke-dashoffset="220"
+                d="M0,18 Q55,4 110,18" filter="url(#sg2)"/>
+        </svg>
+        <div class="r-heart">❤</div>
+      </div>
+      <div class="r-char">
+        <span class="r-char-emoji">${f.emoji}</span>
+        <div class="r-char-name f">${f.name}</div>
+        <div class="r-char-role">${f.role}</div>
+      </div>
+    </div>
+    <div class="r-plot-desc">${PLOT_DESC[plot]||''}</div>
+    <div class="r-stats">
+      <div class="r-stat-box">
+        <div class="rsb-lbl">緣分值</div>
+        <div class="rsb-val fate">${fate}</div>
+        <div class="rsb-sub">天賦姻緣強度</div>
+      </div>
+      <div class="r-stat-box">
+        <div class="rsb-lbl">衝突值</div>
+        <div class="rsb-val conf">${conf}</div>
+        <div class="rsb-sub">磨合難度</div>
+      </div>
+      <div class="r-stat-box">
+        <div class="rsb-lbl">隱藏劇情加成</div>
+        <div class="rsb-val hid">+${hid}</div>
+        <div class="rsb-sub">命運彩蛋</div>
+      </div>
+      <div class="r-stat-box" style="border-color:${fc}44">
+        <div class="rsb-lbl">最終匹配值</div>
+        <div class="rsb-val fin" style="color:${fc}">${fin}</div>
+        <div class="rsb-sub">綜合命格評分</div>
+      </div>
+    </div>
+    <div class="r-fortune">
+      <div class="rf-lbl">月老籤詩判定</div>
+      <div class="rf-val">${luck}</div>
+      <div class="oracle-lbl">月老批語</div>
+      <div class="oracle-txt">「${oracle}」</div>
+    </div>
+    <div class="r-story">
+      <div class="rs-lbl">配對故事</div>
+      <div class="rs-txt">${story}</div>
+    </div>`;
+
+  const ov=document.getElementById('result-overlay');
+  ov.classList.add('on'); ov.scrollTop=0;
+
+  requestAnimationFrame(()=>{
+    const s=document.getElementById('istr');
+    if(s) s.animate(
+      [{strokeDashoffset:'220'},{strokeDashoffset:'0'}],
+      {duration:1000,delay:350,easing:'ease-out',fill:'forwards'}
+    );
+  });
+}
+function closeResult(){document.getElementById('result-overlay').classList.remove('on');}
+
+/* ════════════ PAGE NAV ════════════ */
+function enterMain(){
+  document.getElementById('hero').style.display='none';
+  const m=document.getElementById('main');
+  m.classList.add('on','page-in');
+  renderCol('m'); renderCol('f'); updatePreview();
+}
+function exitMain(){
+  document.getElementById('main').classList.remove('on');
+  document.getElementById('hero').style.display='flex';
+}
+
+// Keyboard nav
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('main').classList.contains('on'))return;
+  if(document.getElementById('result-overlay').classList.contains('on')){
+    if(e.key==='Escape')closeResult(); return;
+  }
+  if(e.key==='ArrowUp')   nav('m',-1);
+  if(e.key==='ArrowDown') nav('m', 1);
+  if(e.key==='ArrowLeft') nav('f',-1);
+  if(e.key==='ArrowRight')nav('f', 1);
+});
+</script>
+</body>
+</html>
